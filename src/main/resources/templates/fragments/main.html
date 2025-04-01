@@ -28,8 +28,24 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/events}">Events</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="browseCategoriesDropdown" role="button" data-bs-toggle="dropdown">
+                            Browse
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="browseCategoriesDropdown">
+                            <li><a class="dropdown-item" th:href="@{/events/categories}">By Categories</a></li>
+                            <li><a class="dropdown-item" th:href="@{/events/upcoming}">Upcoming Events</a></li>
+                            <li><a class="dropdown-item" th:href="@{/events/popular}">Popular Events</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <a class="nav-link" th:href="@{/events/create}">Create Event</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/events/my-registrations}">My Registrations</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/events/my-events}">My Events</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
