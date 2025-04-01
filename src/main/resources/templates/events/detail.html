@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="fragments/header :: header"></div>
+    
+    <div class="container">
+        <div class="event-details" th:if="${event}">
+            <h1 th:text="${event.title}">Event Title</h1>
+            <div class="event-info">
+                <p th:text="${event.description}">Event Description</p>
+                <p th:text="${event.date}">Event Date</p>
+                <p th:text="${event.location}">Event Location</p>
+            </div>
+            <div class="event-actions" sec:authorize="isAuthenticated()">
+                <button th:if="${!event.registered}" th:onclick="'registerForEvent(' + ${event.id} + ')'">Register</button>
+                <button th:if="${event.registered}" th:onclick="'unregisterFromEvent(' + ${event.id} + ')'">Unregister</button>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/footer :: footer"></div>
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html> 

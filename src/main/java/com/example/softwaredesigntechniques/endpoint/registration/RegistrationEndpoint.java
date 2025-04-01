@@ -1,7 +1,7 @@
 package com.example.softwaredesigntechniques.endpoint.registration;
 
-import com.example.softwaredesigntechniques.dto.http.registration.RegistrationDto;
-import com.example.softwaredesigntechniques.dto.http.registration.RegistrationRequest;
+import com.example.softwaredesigntechniques.dto.registration.RegistrationDto;
+import com.example.softwaredesigntechniques.dto.registration.RegistrationRequest;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 

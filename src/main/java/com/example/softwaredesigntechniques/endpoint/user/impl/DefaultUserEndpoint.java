@@ -1,8 +1,9 @@
 package com.example.softwaredesigntechniques.endpoint.user.impl;
 
 import com.example.softwaredesigntechniques.domain.user.User;
-import com.example.softwaredesigntechniques.dto.http.user.UserDto;
-import com.example.softwaredesigntechniques.dto.http.user.UserRequest;
+import com.example.softwaredesigntechniques.dto.user.LoginRequest;
+import com.example.softwaredesigntechniques.dto.user.UserDto;
+import com.example.softwaredesigntechniques.dto.user.UserRequest;
 import com.example.softwaredesigntechniques.endpoint.user.UserEndpoint;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import com.example.softwaredesigntechniques.mapper.user.UserMapper;
@@ -72,6 +73,13 @@ public class DefaultUserEndpoint implements UserEndpoint {
         return users.stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto login(LoginRequest loginRequest) throws NotFoundException {
+        User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        return userMapper.toDto(user);
     }
 
     @Override

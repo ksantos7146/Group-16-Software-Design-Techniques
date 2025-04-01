@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetVibe - Discover Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- using namespace std; --> <!-- Student comment -->
+    <style>
+        .event-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .event-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .badge {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #c13232;">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="../images/logo.png" alt="GetVibe" height="30">
+                GetVibe
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="events.html">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                    <!-- Removed Upload Images link as requested -->
+                </ul>
+                <div class="d-flex">
+                    <a href="create-event.html" class="btn btn-outline-light me-2">Create Event</a>
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="account-settings.html">Account Settings</a></li>
+                            <li><a class="dropdown-item" href="#">My Events</a></li>
+                            <li><a class="dropdown-item" href="#">My Tickets</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white text-center py-5" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('../images/hero-bg.jpg'); background-size: cover; background-position: center;">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Don't miss out!</h1>
+            <p class="lead fs-4 mb-4">Explore the <span style="color: #ff6b6b;">vibrant events</span> happening locally and globally.</p>
+            
+            <!-- Search Bar -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-8">
+                    <form id="searchForm">
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control py-2" placeholder="Search Events, Categories, Location...">
+                            <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="locationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt me-1" viewBox="0 0 16 16">
+                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                                <span id="selectedLocation">Waterloo</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="locationDropdown">
+                                <li><a class="dropdown-item location-option" href="#" data-location="Waterloo">Waterloo</a></li>
+                                <li><a class="dropdown-item location-option" href="#" data-location="Toronto">Toronto</a></li>
+                                <li><a class="dropdown-item location-option" href="#" data-location="Montreal">Montreal</a></li>
+                                <li><a class="dropdown-item location-option" href="#" data-location="Vancouver">Vancouver</a></li>
+                                <li><a class="dropdown-item location-option" href="#" data-location="All Locations">All Locations</a></li>
+                            </ul>
+                            <button class="btn btn-danger" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="mb-4">Explore Categories</h2>
+            <div class="row text-center">
+                <!-- Category 1 -->
+                <div class="col-4 col-md-2 mb-4">
+                    <a href="#" class="text-decoration-none category-filter" data-category="Entertainment">
+                        <div class="category-circle mb-2">
+                            <img src="../images/entertainment.jpg" alt="Entertainment" class="rounded-circle img-fluid">
+                        </div>
+                        <p class="small">Entertainment</p>
+                    </a>
+                </div>
+                <!-- Category 2 -->
+                <div class="col-4 col-md-2 mb-4">
+                    <a href="#" class="text-decoration-none category-filter" data-category="Educational & Business">
+                        <div class="category-circle mb-2">
+                            <img src="../images/education.jpg" alt="Educational & Business" class="rounded-circle img-fluid">
+                        </div>
+                        <p class="small">Educational & Business</p>
+                    </a>
+                </div>
+                <!-- Category 3 -->
+                <div class="col-4 col-md-2 mb-4">
+                    <a href="#" class="text-decoration-none category-filter" data-category="Cultural & Arts">
+                        <div class="category-circle mb-2">
+                            <img src="../images/cultural.jpg" alt="Cultural & Arts" class="rounded-circle img-fluid">
+                        </div>
+                        <p class="small">Cultural & Arts</p>
+                    </a>
+                </div>
+                <!-- Category 4 -->
+                <div class="col-4 col-md-2 mb-4">
+                    <a href="#" class="text-decoration-none category-filter" data-category="Sports & Fitness">
+                        <div class="category-circle mb-2">
+                            <img src="../images/sports.jpg" alt="Sports & Fitness" class="rounded-circle img-fluid">
+                        </div>
+                        <p class="small">Sports & Fitness</p>
+                    </a>
+                </div>
+                <!-- Category 5 -->
+                <div class="col-4 col-md-2 mb-4">
+                    <a href="#" class="text-decoration-none category-filter" data-category="Technology & Innovation">
+                        <div class="category-circle mb-2">
+                            <img src="../images/technology.jpg" alt="Technology & Innovation" class="rounded-circle img-fluid">
+                        </div>
+                        <p class="small">Technology & Innovation</p>
+                    </a>
+                </div>
+                <!-- Category 6 -->
+                <div class="col-4 col-md-2 mb-4">
+                    <a href="#" class="text-decoration-none category-filter" data-category="Travel & Adventure">
+                        <div class="category-circle mb-2">
+                            <img src="../images/travel.jpg" alt="Travel & Adventure" class="rounded-circle img-fluid">
+                        </div>
+                        <p class="small">Travel & Adventure</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Events Section -->
+    <section class="py-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Featured Events</h2>
+                <a href="events.html" class="text-decoration-none">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="row">
+                <!-- Event 1 -->
+                <div class="col-md-4 mb-4">
+                    <a href="event-detail.html" class="text-decoration-none">
+                        <div class="card event-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="../images/event1.jpg" class="card-img-top" alt="LinkedIn Webinar" style="height: 200px; object-fit: cover;">
+                                <div class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">JAN 13</div>
+                                <div class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-3 px-2 py-1"><i class="fas fa-heart"></i> Save</div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">The Road to Jobs and Internships: Starting with LinkedIn</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">Online</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-clock text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">4 PM - 5:30 PM</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Career</span>
+                                    <small><i class="fas fa-users text-muted"></i> 108 attending</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Event 2 -->
+                <div class="col-md-4 mb-4">
+                    <a href="event-detail.html" class="text-decoration-none">
+                        <div class="card event-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="../images/event2.jpg" class="card-img-top" alt="Zumba Dance" style="height: 200px; object-fit: cover;">
+                                <div class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">NOV 25</div>
+                                <div class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-3 px-2 py-1"><i class="fas fa-heart"></i> Save</div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">Online Zumba Dance Fitness Class over Zoom</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">Online</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-clock text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">7 PM - 8 PM</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Fitness</span>
+                                    <small><i class="fas fa-users text-muted"></i> 240 attending</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Event 3 -->
+                <div class="col-md-4 mb-4">
+                    <a href="event-detail.html" class="text-decoration-none">
+                        <div class="card event-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="../images/event3.jpg" class="card-img-top" alt="Book Folding" style="height: 200px; object-fit: cover;">
+                                <div class="badge bg-danger position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">DEC 12</div>
+                                <div class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-3 px-2 py-1"><i class="fas fa-heart"></i> Save</div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">Easy book folding: Christmas edition</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">Online</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-clock text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">4 PM - 5:30 PM</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Crafts</span>
+                                    <small><i class="fas fa-ticket-alt text-success me-1"></i> FREE</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Newly Created Events Section -->
+    <section class="py-3 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Newly Created Events</h2>
+                <a href="events.html?sort=newest" class="text-decoration-none">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="row">
+                <!-- New Event 1 -->
+                <div class="col-md-4 mb-4">
+                    <a href="event-detail.html" class="text-decoration-none">
+                        <div class="card event-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="../images/event4.jpg" class="card-img-top" alt="Sound of Christmas" style="height: 200px; object-fit: cover;">
+                                <div class="badge bg-success position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">NEW</div>
+                                <div class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-3 px-2 py-1"><i class="fas fa-heart"></i> Save</div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">Sound Of Christmas 2023</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">Balgandharva Rang Mandir, Mumbai</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-clock text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">6:30 PM - 9:30 PM</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Concert</span>
+                                    <small><i class="fas fa-ticket-alt text-primary me-1"></i> ₹200</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- New Event 2 -->
+                <div class="col-md-4 mb-4">
+                    <a href="event-detail.html" class="text-decoration-none">
+                        <div class="card event-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="../images/event5.jpg" class="card-img-top" alt="Tech Conference" style="height: 200px; object-fit: cover;">
+                                <div class="badge bg-success position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">NEW</div>
+                                <div class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-3 px-2 py-1"><i class="fas fa-heart"></i> Save</div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">Future Tech Conference 2025</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">Convention Center, Waterloo</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-clock text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">9 AM - 5 PM</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Technology</span>
+                                    <small><i class="fas fa-users text-muted"></i> 45 attending</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- New Event 3 -->
+                <div class="col-md-4 mb-4">
+                    <a href="event-detail.html" class="text-decoration-none">
+                        <div class="card event-card h-100 shadow-sm">
+                            <div class="position-relative">
+                                <img src="../images/event6.jpg" class="card-img-top" alt="Art Workshop" style="height: 200px; object-fit: cover;">
+                                <div class="badge bg-success position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill">NEW</div>
+                                <div class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-3 px-2 py-1"><i class="fas fa-heart"></i> Save</div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title text-dark">Watercolor Painting Workshop for Beginners</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">Art Studio, Downtown</p>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="far fa-clock text-danger me-2"></i>
+                                    <p class="card-text text-muted mb-0">2 PM - 4 PM</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">Art</span>
+                                    <small><i class="fas fa-ticket-alt text-primary me-1"></i> $25</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>GetVibe</h5>
+                    <p>Discover events happening around you and connect with like-minded people.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-decoration-none">Home</a></li>
+                        <li><a href="events.html" class="text-decoration-none">Events</a></li>
+                        <li><a href="about.html" class="text-decoration-none">About</a></li>
+                        <li><a href="contact.html" class="text-decoration-none">Contact</a></li>
+                        <!-- Removed Upload Images link from footer as well -->
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>Email: info@getvibe.com<br>
+                    Phone: (123) 456-7890</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 GetVibe. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/script.js"></script>
+    <script>
+        // Check if user is logged in, if not redirect to login page
+        document.addEventListener('DOMContentLoaded', function() {
+            // In a real application, this would check for a session token or similar
+            // For demo purposes, we'll just simulate this check
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                // Redirect to login page if not logged in
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // Category filtering
+        document.querySelectorAll('.category-filter').forEach(category => {
+            category.addEventListener('click', function(e) {
+                e.preventDefault();
+                const selectedCategory = this.getAttribute('data-category');
+                
+                // In a real application, this would filter events by category
+                // For demo purposes, we'll just show an alert
+                alert(`Filtering events by category: ${selectedCategory}`);
+                
+                // Highlight the selected category
+                document.querySelectorAll('.category-filter').forEach(cat => {
+                    cat.classList.remove('fw-bold');
+                    cat.style.opacity = '0.7';
+                });
+                this.classList.add('fw-bold');
+                this.style.opacity = '1';
+                
+                // You would typically make an AJAX request here to get filtered events
+                // and update the DOM with the results
+            });
+        });
+        
+        // Search functionality
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchTerm = document.getElementById('searchInput').value;
+            const location = document.getElementById('selectedLocation').textContent;
+            
+            // In a real application, this would search for events
+            // For demo purposes, we'll just show an alert
+            alert(`Searching for "${searchTerm}" in ${location}`);
+            
+            // You would typically make an AJAX request here to search for events
+            // and update the DOM with the results
+        });
+        
+        // Location dropdown
+        document.querySelectorAll('.location-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const selectedLocation = this.getAttribute('data-location');
+                document.getElementById('selectedLocation').textContent = selectedLocation;
+            });
+        });
+        
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Clear login status
+            localStorage.removeItem('isLoggedIn');
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

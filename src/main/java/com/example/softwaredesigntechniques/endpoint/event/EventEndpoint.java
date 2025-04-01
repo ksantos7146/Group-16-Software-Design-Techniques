@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.endpoint.event;
 
 import com.example.softwaredesigntechniques.domain.category.Category;
-import com.example.softwaredesigntechniques.dto.http.event.EventDto;
-import com.example.softwaredesigntechniques.dto.http.event.EventRequest;
+import com.example.softwaredesigntechniques.dto.event.EventDto;
+import com.example.softwaredesigntechniques.dto.event.EventRequest;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 

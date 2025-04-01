@@ -2,8 +2,8 @@ package com.example.softwaredesigntechniques.mapper.event;
 
 import com.example.softwaredesigntechniques.domain.event.Event;
 
-import com.example.softwaredesigntechniques.dto.http.event.EventDto;
-import com.example.softwaredesigntechniques.dto.http.event.EventRequest;
+import com.example.softwaredesigntechniques.dto.event.EventDto;
+import com.example.softwaredesigntechniques.dto.event.EventRequest;
 
 import java.util.Collection;
 

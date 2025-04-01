@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.endpoint.location.impl;
 
 import com.example.softwaredesigntechniques.domain.location.Location;
-import com.example.softwaredesigntechniques.dto.http.location.LocationDto;
-import com.example.softwaredesigntechniques.dto.http.location.LocationRequest;
+import com.example.softwaredesigntechniques.dto.location.LocationDto;
+import com.example.softwaredesigntechniques.dto.location.LocationRequest;
 import com.example.softwaredesigntechniques.endpoint.location.LocationEndpoint;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import com.example.softwaredesigntechniques.mapper.location.LocationMapper;

@@ -1,7 +1,8 @@
 package com.example.softwaredesigntechniques.endpoint.user;
 
-import com.example.softwaredesigntechniques.dto.http.user.UserDto;
-import com.example.softwaredesigntechniques.dto.http.user.UserRequest;
+import com.example.softwaredesigntechniques.dto.user.UserDto;
+import com.example.softwaredesigntechniques.dto.user.UserRequest;
+import com.example.softwaredesigntechniques.dto.user.LoginRequest;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,4 +35,7 @@ public interface UserEndpoint {
 
     @Transactional
     void delete(Long id) throws NotFoundException;
+
+    @Transactional(readOnly = true)
+    UserDto login(LoginRequest loginRequest) throws NotFoundException;
 } 

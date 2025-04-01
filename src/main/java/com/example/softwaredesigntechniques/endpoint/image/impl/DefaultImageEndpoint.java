@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.endpoint.image.impl;
 
 import com.example.softwaredesigntechniques.domain.image.Image;
-import com.example.softwaredesigntechniques.dto.http.image.ImageDto;
-import com.example.softwaredesigntechniques.dto.http.image.ImageRequest;
+import com.example.softwaredesigntechniques.dto.image.ImageDto;
+import com.example.softwaredesigntechniques.dto.image.ImageRequest;
 import com.example.softwaredesigntechniques.endpoint.image.ImageEndpoint;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import com.example.softwaredesigntechniques.mapper.image.ImageMapper;

@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.mapper.location.impl;
 
 import com.example.softwaredesigntechniques.domain.location.Location;
-import com.example.softwaredesigntechniques.dto.http.location.LocationDto;
-import com.example.softwaredesigntechniques.dto.http.location.LocationRequest;
+import com.example.softwaredesigntechniques.dto.location.LocationDto;
+import com.example.softwaredesigntechniques.dto.location.LocationRequest;
 import com.example.softwaredesigntechniques.mapper.location.LocationMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

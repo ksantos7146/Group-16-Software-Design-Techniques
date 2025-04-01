@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.mapper.user.impl;
 
 import com.example.softwaredesigntechniques.domain.user.User;
-import com.example.softwaredesigntechniques.dto.http.user.UserDto;
-import com.example.softwaredesigntechniques.dto.http.user.UserRequest;
+import com.example.softwaredesigntechniques.dto.user.UserDto;
+import com.example.softwaredesigntechniques.dto.user.UserRequest;
 import com.example.softwaredesigntechniques.mapper.user.UserMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +42,22 @@ public class DefaultUserMapper implements UserMapper {
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         return user;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User toEntity(UserRequest userRequest) {
+        return toUser(userRequest);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void updateEntity(User user, UserRequest userRequest) {
+        user.setUsername(userRequest.getUsername());
+        user.setEmail(userRequest.getEmail());
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        // Don't update password here as it's handled in the service layer
     }
 
     @Override

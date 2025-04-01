@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.mapper.image;
 
 import com.example.softwaredesigntechniques.domain.image.Image;
-import com.example.softwaredesigntechniques.dto.http.image.ImageDto;
-import com.example.softwaredesigntechniques.dto.http.image.ImageRequest;
+import com.example.softwaredesigntechniques.dto.image.ImageDto;
+import com.example.softwaredesigntechniques.dto.image.ImageRequest;
 
 import java.util.Collection;
 

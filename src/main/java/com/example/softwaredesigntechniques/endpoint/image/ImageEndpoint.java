@@ -1,7 +1,7 @@
 package com.example.softwaredesigntechniques.endpoint.image;
 
-import com.example.softwaredesigntechniques.dto.http.image.ImageDto;
-import com.example.softwaredesigntechniques.dto.http.image.ImageRequest;
+import com.example.softwaredesigntechniques.dto.image.ImageDto;
+import com.example.softwaredesigntechniques.dto.image.ImageRequest;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 

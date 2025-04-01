@@ -1,8 +1,8 @@
 package com.example.softwaredesigntechniques.mapper.registration.impl;
 
 import com.example.softwaredesigntechniques.domain.registration.Registration;
-import com.example.softwaredesigntechniques.dto.http.registration.RegistrationDto;
-import com.example.softwaredesigntechniques.dto.http.registration.RegistrationRequest;
+import com.example.softwaredesigntechniques.dto.registration.RegistrationDto;
+import com.example.softwaredesigntechniques.dto.registration.RegistrationRequest;
 import com.example.softwaredesigntechniques.mapper.event.EventMapper;
 import com.example.softwaredesigntechniques.mapper.registration.RegistrationMapper;
 import com.example.softwaredesigntechniques.mapper.user.UserMapper;

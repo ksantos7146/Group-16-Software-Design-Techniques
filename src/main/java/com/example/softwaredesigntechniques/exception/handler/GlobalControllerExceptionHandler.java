@@ -1,7 +1,7 @@
 package com.example.softwaredesigntechniques.exception.handler;
 
 
-import com.example.softwaredesigntechniques.dto.http.exception.NotFoundErrorResponseDto;
+import com.example.softwaredesigntechniques.dto.exception.NotFoundErrorResponseDto;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
