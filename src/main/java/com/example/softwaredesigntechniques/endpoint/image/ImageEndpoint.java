@@ -16,13 +16,13 @@ public interface ImageEndpoint {
     List<ImageDto> getAll() throws NotFoundException;
 
     @Transactional(readOnly = true)
-    Optional<ImageDto> findByFilePath(String filePath);
+    Optional<ImageDto> findByFileName(String fileName);
 
     @Transactional(readOnly = true)
-    List<ImageDto> findByFilePathContainingIgnoreCase(String filePath);
+    List<ImageDto> findByFileNameContainingIgnoreCase(String fileName);
 
     @Transactional(readOnly = true)
-    boolean existsByFilePath(String filePath);
+    boolean existsByFileName(String fileName);
 
     @Transactional
     ImageDto add(ImageRequest imageRequest);

@@ -16,7 +16,15 @@ import java.time.LocalDateTime;
 public class Image extends RemovalEntity {
 
     @NotBlank
-    private String filePath;
+    @Column(name = "file_name")
+    private String fileName;
+    
+    @Lob
+    @Column(name = "image_data", columnDefinition = "LONGTEXT")
+    private String imageData;
+    
+    @Column(name = "content_type")
+    private String contentType;
 
     @Column(name = "uploaded_at")
     private LocalDateTime uploadedAt;

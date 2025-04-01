@@ -27,7 +27,9 @@ public class DefaultImageMapper implements ImageMapper {
         
         return ImageDto.builder()
                 .id(image.getId())
-                .filePath(image.getFilePath())
+                .fileName(image.getFileName())
+                .imageData(image.getImageData())
+                .contentType(image.getContentType())
                 .uploadedAt(image.getUploadedAt())
                 .createdAt(image.getCreatedAt())
                 .updatedAt(image.getUpdatedAt())
@@ -38,7 +40,9 @@ public class DefaultImageMapper implements ImageMapper {
     @Transactional(readOnly = true)
     public Image toImage(ImageRequest imageRequest) {
         Image image = new Image();
-        image.setFilePath(imageRequest.getFilePath());
+        image.setFileName(imageRequest.getFileName());
+        image.setImageData(imageRequest.getImageData());
+        image.setContentType(imageRequest.getContentType());
         return image;
     }
 

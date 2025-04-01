@@ -305,10 +305,11 @@
                 }
                 
                 // Set image if available
-                if (event.image) {
-                    document.getElementById('event-image').style.backgroundImage = `url(/images/${event.image.filePath})`;
+                if (event.image && event.image.id) {
+                    // Use the image endpoint to get the image
+                    document.getElementById('event-image').style.backgroundImage = `url(/api/images/${event.image.id})`;
                 } else {
-                    document.getElementById('event-image').style.backgroundImage = `url(/images/default-event.jpg)`;
+                    document.getElementById('event-image').style.backgroundImage = `url(/api/images/default-event)`;
                 }
             }
         </script>

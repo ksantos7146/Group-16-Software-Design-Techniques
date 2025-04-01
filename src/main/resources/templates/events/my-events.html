@@ -56,7 +56,7 @@
                 <div class="col" th:each="event : ${events}">
                     <div class="card event-card h-100">
                         <div class="event-image" 
-                             th:style="${event.image != null ? 'background-image: url(/images/' + event.image.filePath + ')' : 'background-image: url(/images/default-event.jpg)'}">
+                             th:style="${event.image != null && event.image.id != null ? 'background-image: url(/api/images/' + event.image.id + ')' : 'background-image: url(/api/images/default-event)'}">
                         </div>
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.title}"></h5>

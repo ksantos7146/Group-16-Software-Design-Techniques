@@ -82,12 +82,11 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card h-100 ${hasDateIssue ? 'border-warning' : ''}">
                                         ${hasDateIssue ? '<div class="badge bg-warning text-dark position-absolute" style="top:10px;right:10px;">Date issue!</div>' : ''}
-                                        <img src="${event.image ? '/images/' + event.image.filePath : '/images/default-event.jpg'}" 
-                                             class="card-img-top" 
-                                             alt="${event.title}">
+                                        <div class="card-img-top" style="height: 200px; background-size: cover; background-position: center; 
+                                             background-image: url('${event.image && event.image.id ? `/api/images/${event.image.id}` : '/api/images/default-event'}')"></div>
                                         <div class="card-body">
                                             <h5 class="card-title">${event.title}</h5>
-                                            <p class="card-text">${event.description || 'No description'}</p>
+                                            <p class="card-text">${event.description ? event.description.substring(0, 100) + (event.description.length > 100 ? '...' : '') : 'No description'}</p>
                                             <p class="card-text">
                                                 <small class="${hasDateIssue ? 'text-danger' : 'text-muted'}">
                                                     <i class="fas fa-calendar"></i> 

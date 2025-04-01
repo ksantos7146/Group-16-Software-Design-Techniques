@@ -61,8 +61,17 @@ public class EventController {
     public ResponseEntity<Object> createEvent(@Valid @RequestBody EventRequest eventRequest) {
         try {
             log.info("Creating event with request: {}", eventRequest);
+            log.info("Image ID from request: {}", eventRequest.getImageId());
+            
             EventDto eventDto = eventEndpoint.add(eventRequest);
             log.info("Event created successfully: {}", eventDto);
+            log.info("Created event has image? {}", (eventDto.getImage() != null));
+            if (eventDto.getImage() != null) {
+                log.info("Event image details - ID: {}, Name: {}", 
+                         eventDto.getImage().getId(), 
+                         eventDto.getImage().getFileName());
+            }
+            
             return ResponseEntity.ok(eventDto);
         } catch (Exception e) {
             log.error("Error creating event: {}", eventRequest, e);

@@ -66,6 +66,33 @@
                                     <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple categories</small>
                                 </div>
                                 
+                                <div class="form-group mb-3">
+                                    <label for="eventImage">Event Image</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" id="eventImage" accept="image/*">
+                                        <button class="btn btn-outline-secondary" type="button" id="uploadImageBtn">Upload</button>
+                                    </div>
+                                    <div id="uploadStatusContainer" class="mt-2" style="display: none;">
+                                        <div class="progress">
+                                            <div id="uploadProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" 
+                                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                        </div>
+                                        <div id="uploadStatus" class="form-text"></div>
+                                    </div>
+                                    <div id="imagePreviewContainer" class="mt-2" style="display: none;">
+                                        <div class="card">
+                                            <img id="imagePreview" class="card-img-top" style="max-height: 200px; object-fit: cover;">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Image Preview</h6>
+                                                <p id="imageInfo" class="card-text small"></p>
+                                                <button type="button" class="btn btn-sm btn-danger" id="removeImageBtn">Remove</button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="imageId" name="imageId">
+                                    </div>
+                                    <small class="form-text text-muted">Upload an image for your event (maximum size: 5MB)</small>
+                                </div>
+                                
                                 <h5 class="mt-4">Event Location</h5>
                                 <div id="locationForm">
                                     <div class="form-group mb-3">
@@ -108,6 +135,167 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const form = document.getElementById('createEventForm');
                 const errorMessage = document.getElementById('errorMessage');
+                const uploadImageBtn = document.getElementById('uploadImageBtn');
+                const eventImageInput = document.getElementById('eventImage');
+                const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+                const imagePreview = document.getElementById('imagePreview');
+                const imageIdInput = document.getElementById('imageId');
+                const removeImageBtn = document.getElementById('removeImageBtn');
+                
+                // Handle image upload
+                uploadImageBtn.addEventListener('click', async function() {
+                    if (!eventImageInput.files || eventImageInput.files.length === 0) {
+                        alert('Please select an image to upload.');
+                        return;
+                    }
+                    
+                    const file = eventImageInput.files[0];
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select a valid image file.');
+                        return;
+                    }
+                    
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size exceeds the 5MB limit.');
+                        return;
+                    }
+                    
+                    try {
+                        // Show upload status
+                        uploadImageBtn.textContent = 'Processing...';
+                        uploadImageBtn.disabled = true;
+                        const statusContainer = document.getElementById('uploadStatusContainer');
+                        const statusText = document.getElementById('uploadStatus');
+                        const progressBar = document.getElementById('uploadProgressBar');
+                        
+                        statusContainer.style.display = 'block';
+                        statusText.textContent = 'Reading file...';
+                        progressBar.style.width = '10%';
+                        progressBar.textContent = '10%';
+                        progressBar.setAttribute('aria-valuenow', 10);
+                        
+                        // Convert the image to base64
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                statusText.textContent = 'Converting to base64...';
+                                progressBar.style.width = '50%';
+                                progressBar.textContent = '50%';
+                                progressBar.setAttribute('aria-valuenow', 50);
+                                
+                                // Get the base64 string (remove the data:image/xyz;base64, prefix)
+                                const base64String = e.target.result.split(',')[1];
+                                
+                                // Prepare the request data
+                                const requestData = {
+                                    fileName: file.name,
+                                    imageData: base64String,
+                                    contentType: file.type
+                                };
+                                
+                                statusText.textContent = 'Uploading to server...';
+                                progressBar.style.width = '70%';
+                                progressBar.textContent = '70%';
+                                progressBar.setAttribute('aria-valuenow', 70);
+                                
+                                // Send the request
+                                const response = await fetch('/api/images/upload', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(requestData)
+                                });
+                                
+                                progressBar.style.width = '100%';
+                                progressBar.textContent = '100%';
+                                progressBar.setAttribute('aria-valuenow', 100);
+                                
+                                if (!response.ok) {
+                                    const errorText = await response.text();
+                                    console.error('Upload error response:', errorText);
+                                    throw new Error(errorText || 'Image upload failed');
+                                }
+                                
+                                const data = await response.json();
+                                console.log('Upload response:', data);
+                                
+                                // Store the image ID and display preview
+                                imageIdInput.value = data.id;
+                                
+                                // Create a preview URL from the base64 data
+                                imagePreview.src = `data:${file.type};base64,${base64String}`;
+                                imagePreviewContainer.style.display = 'block';
+                                
+                                // Set image info text
+                                document.getElementById('imageInfo').textContent = `ID: ${data.id} | File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                                
+                                // Hide status after a delay
+                                setTimeout(() => {
+                                    statusContainer.style.display = 'none';
+                                }, 1500);
+                                
+                                // Reset the file input
+                                eventImageInput.value = '';
+                                statusText.textContent = 'Upload successful!';
+                            } catch (error) {
+                                document.getElementById('uploadStatus').textContent = 'Upload failed: ' + error.message;
+                                document.getElementById('uploadProgressBar').classList.add('bg-danger');
+                                alert('Failed to upload image: ' + error.message);
+                                console.error('Upload error:', error);
+                            } finally {
+                                uploadImageBtn.textContent = 'Upload';
+                                uploadImageBtn.disabled = false;
+                            }
+                        };
+                        
+                        reader.onerror = function() {
+                            statusText.textContent = 'Error reading file';
+                            progressBar.classList.add('bg-danger');
+                            uploadImageBtn.textContent = 'Upload';
+                            uploadImageBtn.disabled = false;
+                        };
+                        
+                        // Start reading the file as a data URL (base64)
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        document.getElementById('uploadStatus').textContent = 'Upload failed: ' + error.message;
+                        document.getElementById('uploadProgressBar').classList.add('bg-danger');
+                        alert('Failed to upload image: ' + error.message);
+                        console.error('Upload error:', error);
+                        uploadImageBtn.textContent = 'Upload';
+                        uploadImageBtn.disabled = false;
+                    }
+                });
+                
+                // Handle removing the image
+                removeImageBtn.addEventListener('click', async function() {
+                    const imageId = imageIdInput.value;
+                    if (!imageId) {
+                        imagePreviewContainer.style.display = 'none';
+                        return;
+                    }
+                    
+                    if (confirm('Are you sure you want to remove this image?')) {
+                        try {
+                            const response = await fetch(`/api/images/${imageId}`, {
+                                method: 'DELETE'
+                            });
+                            
+                            if (!response.ok) {
+                                throw new Error('Failed to delete image');
+                            }
+                            
+                            // Clear the preview and image ID
+                            imageIdInput.value = '';
+                            imagePreview.src = '';
+                            imagePreviewContainer.style.display = 'none';
+                        } catch (error) {
+                            alert('Failed to remove image: ' + error.message);
+                            console.error('Delete error:', error);
+                        }
+                    }
+                });
 
                 form.addEventListener('submit', async function(e) {
                     e.preventDefault();
@@ -156,10 +344,17 @@
                             endTime: endTime,
                             capacity: document.getElementById('capacity').value ? parseInt(document.getElementById('capacity').value) : null,
                             categories: selectedCategories,
-                            locationRequest: locationRequest
+                            locationRequest: locationRequest,
+                            imageId: document.getElementById('imageId').value || null
                         };
                         
-                        console.log('Event data being sent:', eventData);
+                        // Log detailed information about the image ID
+                        const imageId = document.getElementById('imageId').value;
+                        console.log('Image ID for event creation:', imageId);
+                        console.log('Image ID element value:', document.getElementById('imageId').value);
+                        console.log('Image ID element:', document.getElementById('imageId'));
+                        console.log('Is imageId present in request?', eventData.imageId !== null);
+                        console.log('Event data being sent:', JSON.stringify(eventData, null, 2));
                         
                         const eventResponse = await fetch('/events', {
                             method: 'POST',

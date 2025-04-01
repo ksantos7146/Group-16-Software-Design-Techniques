@@ -13,5 +13,10 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class ImageRequest {
     @NotBlank
-    private String filePath;
+    private String fileName;
+    
+    @NotBlank
+    private String imageData;
+    
+    private String contentType;
 } 

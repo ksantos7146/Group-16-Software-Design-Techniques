@@ -182,17 +182,22 @@ public class DefaultEventEndpoint implements EventEndpoint {
             
             // Set image if provided
             if (eventRequest.getImageId() != null) {
+                log.info("Event request includes image ID: {}", eventRequest.getImageId());
                 try {
                     Image image = imageService.get(eventRequest.getImageId());
+                    log.info("Found image with ID {}: {}", image.getId(), image.getFileName());
                     if (image != null) {
                         event.setImage(image);
-                        log.debug("Set image with ID: {}", image.getId());
+                        log.info("Set image with ID: {} on event", image.getId());
                     } else {
                         log.warn("Image with ID {} not found, continuing without image", eventRequest.getImageId());
                     }
                 } catch (Exception e) {
-                    log.warn("Error fetching image with ID {}, continuing without image: {}", eventRequest.getImageId(), e.getMessage());
+                    log.error("Error fetching image with ID {}: {}", eventRequest.getImageId(), e.getMessage(), e);
+                    log.warn("Continuing without image due to error");
                 }
+            } else {
+                log.info("No image ID provided in event request");
             }
             
             // Validate event times but allow invalid ones (with warning)
@@ -243,17 +248,22 @@ public class DefaultEventEndpoint implements EventEndpoint {
         
         // Set image if provided
         if (eventRequest.getImageId() != null) {
+            log.info("Event request includes image ID: {}", eventRequest.getImageId());
             try {
                 Image image = imageService.get(eventRequest.getImageId());
+                log.info("Found image with ID {}: {}", image.getId(), image.getFileName());
                 if (image != null) {
                     updatedEvent.setImage(image);
-                    log.debug("Set image with ID: {}", image.getId());
+                    log.info("Set image with ID: {} on event", image.getId());
                 } else {
                     log.warn("Image with ID {} not found, continuing without image", eventRequest.getImageId());
                 }
             } catch (Exception e) {
-                log.warn("Error fetching image with ID {}, continuing without image: {}", eventRequest.getImageId(), e.getMessage());
+                log.error("Error fetching image with ID {}: {}", eventRequest.getImageId(), e.getMessage(), e);
+                log.warn("Continuing without image due to error");
             }
+        } else {
+            log.info("No image ID provided in event request");
         }
         
         // Check for date issues but allow them (just log a warning)

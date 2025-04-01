@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ImageRepository extends BaseRepository<Image> {
-    Optional<Image> findByFilePath(String filePath);
-    List<Image> findByFilePathContainingIgnoreCase(String filePath);
-    boolean existsByFilePath(String filePath);
+    Optional<Image> findByFileName(String fileName);
+    List<Image> findByFileNameContainingIgnoreCase(String fileName);
+    boolean existsByFileName(String fileName);
 } 

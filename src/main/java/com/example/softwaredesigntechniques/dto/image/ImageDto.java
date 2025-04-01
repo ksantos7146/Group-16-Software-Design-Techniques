@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ImageDto {
     private Long id;
-    private String filePath;
+    private String fileName;
+    private String imageData;
+    private String contentType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime uploadedAt;

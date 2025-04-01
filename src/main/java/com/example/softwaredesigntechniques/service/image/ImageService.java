@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface ImageService extends BaseService<Image, Long> {
 
-    Optional<Image> findByFilePath(String filePath);
+    Optional<Image> findByFileName(String fileName);
 
-    List<Image> findByFilePathContainingIgnoreCase(String filePath);
+    List<Image> findByFileNameContainingIgnoreCase(String fileName);
 
-    boolean existsByFilePath(String filePath);
+    boolean existsByFileName(String fileName);
 }

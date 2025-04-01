@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,24 +44,22 @@ public class DefaultImageEndpoint implements ImageEndpoint {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ImageDto> findByFilePath(String filePath) {
-        return imageService.findByFilePath(filePath)
+    public Optional<ImageDto> findByFileName(String fileName) {
+        return imageService.findByFileName(fileName)
                 .map(imageMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ImageDto> findByFilePathContainingIgnoreCase(String filePath) {
-        List<Image> images = imageService.findByFilePathContainingIgnoreCase(filePath);
-        return images.stream()
-                .map(imageMapper::toDto)
-                .collect(Collectors.toList());
+    public List<ImageDto> findByFileNameContainingIgnoreCase(String fileName) {
+        List<Image> images = imageService.findByFileNameContainingIgnoreCase(fileName);
+        return new ArrayList<>(imageMapper.toDto(images));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existsByFilePath(String filePath) {
-        return imageService.existsByFilePath(filePath);
+    public boolean existsByFileName(String fileName) {
+        return imageService.existsByFileName(fileName);
     }
 
     @Override

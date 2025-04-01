@@ -23,17 +23,17 @@ public class DefaultImageService extends DefaultBaseService<Image, Long> impleme
     }
 
     @Override
-    public Optional<Image> findByFilePath(String filePath) {
-        return imageRepository.findByFilePath(filePath);
+    public Optional<Image> findByFileName(String fileName) {
+        return imageRepository.findByFileName(fileName);
     }
 
     @Override
-    public List<Image> findByFilePathContainingIgnoreCase(String filePath) {
-        return imageRepository.findByFilePathContainingIgnoreCase(filePath);
+    public List<Image> findByFileNameContainingIgnoreCase(String fileName) {
+        return imageRepository.findByFileNameContainingIgnoreCase(fileName);
     }
 
     @Override
-    public boolean existsByFilePath(String filePath) {
-        return imageRepository.existsByFilePath(filePath);
+    public boolean existsByFileName(String fileName) {
+        return imageRepository.existsByFileName(fileName);
     }
 } 
