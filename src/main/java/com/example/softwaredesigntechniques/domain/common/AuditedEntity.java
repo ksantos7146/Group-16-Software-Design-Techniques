@@ -1,6 +1,7 @@
 package com.example.softwaredesigntechniques.domain.common;
 
-import com.example.shopify.domain.employee.Employee;
+
+import com.example.softwaredesigntechniques.domain.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -29,10 +30,10 @@ public abstract class AuditedEntity extends BaseEntity {
     @CreatedBy
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private Employee createdBy;
+    private User createdBy;
 
     @LastModifiedBy
     @ManyToOne
     @JoinColumn(name = "updated_by")
-    private Employee updatedBy;
+    private User updatedBy;
 } 
