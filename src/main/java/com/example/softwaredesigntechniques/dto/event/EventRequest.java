@@ -1,6 +1,7 @@
 package com.example.softwaredesigntechniques.dto.event;
 
 import com.example.softwaredesigntechniques.domain.category.Category;
+import com.example.softwaredesigntechniques.dto.location.LocationRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,13 @@ public class EventRequest {
     @NotBlank
     private String title;
     private String description;
+    
+    // Either locationId or locationRequest should be provided
     private Long locationId;
+    
+    // Optional embedded location information
+    private LocationRequest locationRequest;
+    
     private Set<Category> categories;
     private Long imageId;
 

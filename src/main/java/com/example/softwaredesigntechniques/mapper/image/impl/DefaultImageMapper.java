@@ -21,6 +21,10 @@ public class DefaultImageMapper implements ImageMapper {
     @Override
     @Transactional(readOnly = true)
     public ImageDto toDto(Image image) {
+        if (image == null) {
+            return null;
+        }
+        
         return ImageDto.builder()
                 .id(image.getId())
                 .filePath(image.getFilePath())
@@ -41,9 +45,15 @@ public class DefaultImageMapper implements ImageMapper {
     @Override
     @Transactional(readOnly = true)
     public Collection<ImageDto> toDto(Collection<Image> images) {
+        if (images == null) {
+            return new ArrayList<>();
+        }
+        
         Collection<ImageDto> imageDtos = new ArrayList<>();
         for (Image image : images) {
-            imageDtos.add(toDto(image));
+            if (image != null) {
+                imageDtos.add(toDto(image));
+            }
         }
         return imageDtos;
     }

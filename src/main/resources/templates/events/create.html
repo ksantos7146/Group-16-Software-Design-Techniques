@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/main}">
+<head>
+    <title>Create Event - Get Vibe</title>
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-center">Create New Event</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                            <form id="createEventForm">
+                                <div class="form-group mb-3">
+                                    <label for="title">Event Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="startTime">Start Date/Time</label>
+                                            <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="endTime">End Date/Time</label>
+                                            <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="capacity">Capacity</label>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" min="1">
+                                    <small class="form-text text-muted">Leave empty for unlimited capacity</small>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="categories">Categories</label>
+                                    <select class="form-select" id="categories" name="categories" multiple>
+                                        <option value="MUSIC">Music</option>
+                                        <option value="ARTS">Arts</option>
+                                        <option value="SPORTS">Sports</option>
+                                        <option value="TECHNOLOGY">Technology</option>
+                                        <option value="FOOD">Food</option>
+                                        <option value="BUSINESS">Business</option>
+                                        <option value="EDUCATION">Education</option>
+                                        <option value="HEALTH">Health</option>
+                                        <option value="TRAVEL">Travel</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
+                                    <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple categories</small>
+                                </div>
+                                
+                                <h5 class="mt-4">Event Location</h5>
+                                <div id="locationForm">
+                                    <div class="form-group mb-3">
+                                        <label for="placeName">Location Name</label>
+                                        <input type="text" class="form-control" id="placeName" name="placeName" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label for="latitude">Latitude</label>
+                                                <input type="number" step="0.000001" class="form-control" id="latitude" name="latitude" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label for="longitude">Longitude</label>
+                                                <input type="number" step="0.000001" class="form-control" id="longitude" name="longitude" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="address">Address</label>
+                                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary">Create Event</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.getElementById('createEventForm');
+                const errorMessage = document.getElementById('errorMessage');
+
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    errorMessage.style.display = 'none';
+                    
+                    try {
+                        // Format dates - use datetime-local input value but ensure correct formatting for backend
+                        const startTimeInput = document.getElementById('startTime').value;
+                        const endTimeInput = document.getElementById('endTime').value;
+                        
+                        if (!startTimeInput || !endTimeInput) {
+                            throw new Error("Start time and end time are required");
+                        }
+                        
+                        // Convert to ISO string format for backend
+                        const startTime = new Date(startTimeInput).toISOString();
+                        const endTime = new Date(endTimeInput).toISOString();
+                        
+                        // Get selected categories as strings
+                        const categoriesSelect = document.getElementById('categories');
+                        const selectedCategories = Array.from(categoriesSelect.selectedOptions).map(option => option.value);
+                        
+                        if (selectedCategories.length === 0) {
+                            // Add at least one category if none selected
+                            selectedCategories.push("OTHER");
+                        }
+                        
+                        // Create location request
+                        const locationRequest = {
+                            placeName: document.getElementById('placeName').value,
+                            latitude: parseFloat(document.getElementById('latitude').value),
+                            longitude: parseFloat(document.getElementById('longitude').value),
+                            address: document.getElementById('address').value
+                        };
+                        
+                        // Validate location data
+                        if (!locationRequest.placeName || isNaN(locationRequest.latitude) || isNaN(locationRequest.longitude) || !locationRequest.address) {
+                            throw new Error("All location fields are required");
+                        }
+                        
+                        // Create the event data
+                        const eventData = {
+                            title: document.getElementById('title').value,
+                            description: document.getElementById('description').value,
+                            startTime: startTime,
+                            endTime: endTime,
+                            capacity: document.getElementById('capacity').value ? parseInt(document.getElementById('capacity').value) : null,
+                            categories: selectedCategories,
+                            locationRequest: locationRequest
+                        };
+                        
+                        console.log('Event data being sent:', eventData);
+                        
+                        const eventResponse = await fetch('/events', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(eventData)
+                        });
+                        
+                        if (!eventResponse.ok) {
+                            const errorText = await eventResponse.text();
+                            console.error('Server error response:', errorText);
+                            throw new Error(`Failed to create event: ${errorText || eventResponse.statusText}`);
+                        }
+                        
+                        const eventResult = await eventResponse.json();
+                        console.log('Event created successfully:', eventResult);
+                        
+                        // Redirect to event detail page
+                        window.location.href = '/events/' + eventResult.id;
+                    } catch (error) {
+                        errorMessage.textContent = error.message;
+                        errorMessage.style.display = 'block';
+                        console.error('Error creating event:', error);
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

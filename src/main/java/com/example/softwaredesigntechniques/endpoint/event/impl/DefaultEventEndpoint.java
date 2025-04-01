@@ -15,6 +15,7 @@ import com.example.softwaredesigntechniques.service.image.ImageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class DefaultEventEndpoint implements EventEndpoint {
 
     private final EventService eventService;
@@ -133,20 +135,67 @@ public class DefaultEventEndpoint implements EventEndpoint {
     @Override
     @Transactional
     public EventDto add(EventRequest eventRequest) throws NotFoundException {
-        Event event = eventMapper.toEvent(eventRequest);
-        
-        // Set location
-        Location location = locationService.get(eventRequest.getLocationId());
-        event.setLocation(location);
-        
-        // Set image if provided
-        if (eventRequest.getImageId() != null) {
-            Image image = imageService.get(eventRequest.getImageId());
-            event.setImage(image);
+        try {
+            log.debug("Creating event from request: {}", eventRequest);
+            Event event = eventMapper.toEvent(eventRequest);
+            
+            // Ensure categories are set properly
+            if (eventRequest.getCategories() == null || eventRequest.getCategories().isEmpty()) {
+                // Set default category if none provided
+                event.setCategories(Set.of(Category.OTHER));
+                log.debug("No categories provided, using default OTHER category");
+            }
+            
+            // Handle location
+            if (eventRequest.getLocationId() != null) {
+                // Use existing location
+                Location location = locationService.get(eventRequest.getLocationId());
+                event.setLocation(location);
+                log.debug("Using existing location with ID: {}", location.getId());
+            } else if (eventRequest.getLocationRequest() != null) {
+                // Create a new location
+                Location location = new Location();
+                location.setLatitude(eventRequest.getLocationRequest().getLatitude());
+                location.setLongitude(eventRequest.getLocationRequest().getLongitude());
+                location.setAddress(eventRequest.getLocationRequest().getAddress());
+                location.setPlaceName(eventRequest.getLocationRequest().getPlaceName());
+                
+                location = locationService.saveOrUpdate(location);
+                event.setLocation(location);
+                log.info("Created new location {} for event", location.getId());
+            } else {
+                throw new IllegalArgumentException("Either locationId or locationRequest must be provided");
+            }
+            
+            // Set image if provided
+            if (eventRequest.getImageId() != null) {
+                try {
+                    Image image = imageService.get(eventRequest.getImageId());
+                    if (image != null) {
+                        event.setImage(image);
+                        log.debug("Set image with ID: {}", image.getId());
+                    } else {
+                        log.warn("Image with ID {} not found, continuing without image", eventRequest.getImageId());
+                    }
+                } catch (Exception e) {
+                    log.warn("Error fetching image with ID {}, continuing without image: {}", eventRequest.getImageId(), e.getMessage());
+                }
+            }
+            
+            // Validate event times
+            if (event.getStartTime() != null && event.getEndTime() != null) {
+                if (event.getStartTime().isAfter(event.getEndTime())) {
+                    throw new IllegalArgumentException("Event start time cannot be after end time");
+                }
+            }
+            
+            event = eventService.saveOrUpdate(event);
+            log.info("Successfully created event with ID: {}", event.getId());
+            return eventMapper.toDto(event);
+        } catch (Exception e) {
+            log.error("Error adding event: {}", eventRequest, e);
+            throw e;
         }
-        
-        event = eventService.saveOrUpdate(event);
-        return eventMapper.toDto(event);
     }
 
     @Override
@@ -157,13 +206,40 @@ public class DefaultEventEndpoint implements EventEndpoint {
         updatedEvent.setId(existingEvent.getId());
         
         // Set location
-        Location location = locationService.get(eventRequest.getLocationId());
-        updatedEvent.setLocation(location);
+        if (eventRequest.getLocationId() != null) {
+            try {
+                Location location = locationService.get(eventRequest.getLocationId());
+                updatedEvent.setLocation(location);
+            } catch (Exception e) {
+                log.error("Error fetching location with ID {}: {}", eventRequest.getLocationId(), e.getMessage());
+                throw e;
+            }
+        } else if (eventRequest.getLocationRequest() != null) {
+            // Create a new location
+            Location location = new Location();
+            location.setLatitude(eventRequest.getLocationRequest().getLatitude());
+            location.setLongitude(eventRequest.getLocationRequest().getLongitude());
+            location.setAddress(eventRequest.getLocationRequest().getAddress());
+            location.setPlaceName(eventRequest.getLocationRequest().getPlaceName());
+            
+            location = locationService.saveOrUpdate(location);
+            updatedEvent.setLocation(location);
+            log.info("Created new location {} for updated event", location.getId());
+        }
         
         // Set image if provided
         if (eventRequest.getImageId() != null) {
-            Image image = imageService.get(eventRequest.getImageId());
-            updatedEvent.setImage(image);
+            try {
+                Image image = imageService.get(eventRequest.getImageId());
+                if (image != null) {
+                    updatedEvent.setImage(image);
+                    log.debug("Set image with ID: {}", image.getId());
+                } else {
+                    log.warn("Image with ID {} not found, continuing without image", eventRequest.getImageId());
+                }
+            } catch (Exception e) {
+                log.warn("Error fetching image with ID {}, continuing without image: {}", eventRequest.getImageId(), e.getMessage());
+            }
         }
         
         updatedEvent = eventService.saveOrUpdate(updatedEvent);
