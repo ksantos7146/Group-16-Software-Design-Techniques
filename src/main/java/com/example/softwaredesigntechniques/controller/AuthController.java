@@ -53,16 +53,4 @@ public class AuthController {
             return "auth/register";
         }
     }
-
-    @PostMapping("/login")
-    @ResponseBody
-    public ResponseEntity<UserDto> login(@Valid @RequestBody LoginRequest loginRequest) {
-        try {
-            return ResponseEntity.ok(userEndpoint.login(loginRequest));
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 } 

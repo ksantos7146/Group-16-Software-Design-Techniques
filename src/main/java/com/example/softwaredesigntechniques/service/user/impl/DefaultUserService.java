@@ -72,6 +72,18 @@ public class DefaultUserService extends DefaultBaseService<User, Long> implement
     @Override
     @Transactional
     public User saveOrUpdate(User user) {
+        // Check if this is a new user or password is being updated
+        if (user.getId() == null || user.getPassword() != null && !user.getPassword().isEmpty()) {
+            // Encode the password before saving
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else if (user.getId() != null) {
+            // For existing users, keep the current password if not provided
+            userRepository.findById(user.getId()).ifPresent(existingUser -> {
+                if (user.getPassword() == null || user.getPassword().isEmpty()) {
+                    user.setPassword(existingUser.getPassword());
+                }
+            });
+        }
         return super.saveOrUpdate(user);
     }
 
