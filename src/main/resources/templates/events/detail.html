@@ -86,7 +86,150 @@
                 const eventId = pathParts[pathParts.length - 1];
                 
                 fetchEventDetails(eventId);
+                checkRegistrationStatus(eventId);
+                
+                // Add event listener for registration button
+                const registrationButton = document.getElementById('registration-button');
+                if (registrationButton) {
+                    registrationButton.addEventListener('click', function() {
+                        registerForEvent(eventId);
+                    });
+                }
             });
+            
+            async function checkRegistrationStatus(eventId) {
+                try {
+                    // Check if user is authenticated by looking for auth elements
+                    const authElements = document.querySelectorAll('[sec\\:authorize="isAuthenticated()"]');
+                    if (authElements.length === 0 || authElements[0].style.display === 'none') {
+                        console.log('User is not authenticated, skipping registration status check');
+                        return;
+                    }
+                    
+                    const headers = {};
+                    
+                    // We don't need CSRF tokens if CSRF is disabled in Spring Security
+                    // Only try to get them if they might be available
+                    const csrfMeta = document.querySelector('meta[name="_csrf"]');
+                    if (csrfMeta && csrfMeta.getAttribute('content')) {
+                        headers['X-CSRF-TOKEN'] = csrfMeta.getAttribute('content');
+                        console.log("CSRF token found and applied for registration status check");
+                    }
+                    
+                    console.log("Checking registration status for event ID:", eventId);
+                    
+                    const response = await fetch(`/api/registrations/event/${eventId}`, {
+                        headers: headers,
+                        credentials: 'same-origin' // Include cookies for authentication
+                    });
+                    
+                    console.log("Registration status check response:", response.status);
+                    
+                    if (!response.ok) {
+                        console.warn('Not checking registration status, status: ' + response.status);
+                        return; // User might not be logged in, or other error
+                    }
+                    
+                    const data = await response.json();
+                    console.log("Registration status data:", data);
+                    
+                    if (data.registered) {
+                        // User is already registered for this event
+                        updateRegistrationButton(true);
+                    }
+                } catch (error) {
+                    console.error('Error checking registration status:', error);
+                }
+            }
+            
+            function updateRegistrationButton(isRegistered) {
+                const registrationButton = document.getElementById('registration-button');
+                if (!registrationButton) return;
+                
+                if (isRegistered) {
+                    registrationButton.textContent = 'Registered';
+                    registrationButton.classList.remove('btn-primary');
+                    registrationButton.classList.add('btn-success');
+                    registrationButton.disabled = true;
+                } else {
+                    registrationButton.textContent = 'Register';
+                    registrationButton.classList.remove('btn-success');
+                    registrationButton.classList.add('btn-primary');
+                    registrationButton.disabled = false;
+                }
+            }
+            
+            async function registerForEvent(eventId) {
+                try {
+                    console.log("Attempting to register for event ID:", eventId);
+                    
+                    // Check that we have a valid event ID
+                    if (!eventId || isNaN(parseInt(eventId))) {
+                        throw new Error("Invalid event ID");
+                    }
+                    
+                    const registrationRequest = {
+                        eventId: parseInt(eventId),  // Ensure it's a number
+                        // userId will be set by the backend from the authenticated user
+                    };
+                    
+                    console.log("Sending registration request:", registrationRequest);
+                    
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    // We don't need CSRF tokens if CSRF is disabled in Spring Security
+                    // Only try to get them if they might be available
+                    const csrfMeta = document.querySelector('meta[name="_csrf"]');
+                    if (csrfMeta && csrfMeta.getAttribute('content')) {
+                        headers['X-CSRF-TOKEN'] = csrfMeta.getAttribute('content');
+                        console.log("CSRF token found and applied");
+                    } else {
+                        console.log("No CSRF token found, CSRF might be disabled");
+                    }
+                    
+                    const response = await fetch('/api/registrations', {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(registrationRequest),
+                        credentials: 'same-origin'  // Include cookies for authentication
+                    });
+                    
+                    console.log("Registration response status:", response.status);
+                    
+                    if (!response.ok) {
+                        let errorMessage = "Failed to register for event";
+                        try {
+                            const errorData = await response.json();
+                            console.error("Registration error details:", errorData);
+                            if (errorData.error) {
+                                errorMessage = errorData.error;
+                            } else if (errorData.message) {
+                                errorMessage = errorData.message;
+                            } else if (typeof errorData === 'string') {
+                                errorMessage = errorData;
+                            }
+                        } catch (e) {
+                            console.error("Could not parse error response:", e);
+                        }
+                        throw new Error(errorMessage);
+                    }
+                    
+                    // Registration successful
+                    const result = await response.json();
+                    console.log('Registration successful', result);
+                    
+                    // Update UI to show registered status
+                    updateRegistrationButton(true);
+                    
+                    // Optionally show a success message
+                    alert('You have successfully registered for this event!');
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    alert('Error registering for event: ' + error.message);
+                }
+            }
             
             async function fetchEventDetails(eventId) {
                 try {
