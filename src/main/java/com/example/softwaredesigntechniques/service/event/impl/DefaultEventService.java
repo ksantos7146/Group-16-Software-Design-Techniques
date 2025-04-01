@@ -69,4 +69,13 @@ public class DefaultEventService extends DefaultBaseService<Event, Long> impleme
     public List<Event> findByImageId(Long imageId) {
         return eventRepository.findByImageId(imageId);
     }
+
+    @Override
+    public List<Event> findAll() {
+        return eventRepository.findAll();
+    }
+
+    public EventRepository getEventRepository() {
+        return eventRepository;
+    }
 } 

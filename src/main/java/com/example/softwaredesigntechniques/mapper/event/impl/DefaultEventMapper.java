@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,23 +25,39 @@ public class DefaultEventMapper implements EventMapper {
 
     private final LocationMapper locationMapper;
     private final ImageMapper imageMapper;
+    private static final Logger log = LoggerFactory.getLogger(DefaultEventMapper.class);
 
     @Override
     @Transactional(readOnly = true)
     public EventDto toDto(Event event) {
-        return EventDto.builder()
-                .id(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .location(locationMapper.toDto(event.getLocation()))
-                .categories(event.getCategories())
-                .image(imageMapper.toDto(event.getImage()))
-                .startTime(event.getStartTime())
-                .endTime(event.getEndTime())
-                .capacity(event.getCapacity())
-                .createdAt(event.getCreatedAt())
-                .updatedAt(event.getUpdatedAt())
-                .build();
+        if (event == null) {
+            log.warn("Attempted to convert null event to DTO");
+            return null;
+        }
+        
+        try {
+            return EventDto.builder()
+                    .id(event.getId())
+                    .title(event.getTitle())
+                    .description(event.getDescription())
+                    .location(event.getLocation() != null ? locationMapper.toDto(event.getLocation()) : null)
+                    .categories(event.getCategories())
+                    .image(event.getImage() != null ? imageMapper.toDto(event.getImage()) : null)
+                    .startTime(event.getStartTime())
+                    .endTime(event.getEndTime())
+                    .capacity(event.getCapacity())
+                    .createdAt(event.getCreatedAt())
+                    .updatedAt(event.getUpdatedAt())
+                    .build();
+        } catch (Exception e) {
+            log.error("Error converting event to DTO: {}", event.getId(), e);
+            // Still return a basic DTO with the ID to avoid NPEs in the UI
+            return EventDto.builder()
+                    .id(event.getId())
+                    .title(event.getTitle() != null ? event.getTitle() : "Event with issues")
+                    .description("Error loading complete event data")
+                    .build();
+        }
     }
 
     @Override

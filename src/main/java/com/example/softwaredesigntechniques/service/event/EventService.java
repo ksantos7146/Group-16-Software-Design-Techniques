@@ -18,4 +18,5 @@ public interface EventService extends BaseService<Event, Long> {
     List<Event> findByCategoriesIn(Set<Category> categories);
     List<Event> findByLocationId(Long locationId);
     List<Event> findByImageId(Long imageId);
+    List<Event> findAll();
 } 

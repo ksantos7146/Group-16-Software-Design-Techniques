@@ -1,9 +1,11 @@
 package com.example.softwaredesigntechniques.controller;
 
+import com.example.softwaredesigntechniques.domain.event.Event;
 import com.example.softwaredesigntechniques.endpoint.event.EventEndpoint;
 import com.example.softwaredesigntechniques.dto.event.EventDto;
 import com.example.softwaredesigntechniques.dto.event.EventRequest;
 import com.example.softwaredesigntechniques.exception.NotFoundException;
+import com.example.softwaredesigntechniques.service.event.impl.DefaultEventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +77,17 @@ public class EventController {
     @ResponseBody
     public ResponseEntity<List<EventDto>> getAllEvents() {
         try {
-            return ResponseEntity.ok(eventEndpoint.getAll());
+            log.info("Getting all events");
+            
+            // Get data through endpoint layer
+            List<EventDto> events = eventEndpoint.getAll();
+            log.info("Through endpoint - found {} events", events.size());
+            
+            for (EventDto event : events) {
+                log.info("Event: id={}, title={}, startTime={}, endTime={}", 
+                         event.getId(), event.getTitle(), event.getStartTime(), event.getEndTime());
+            }
+            return ResponseEntity.ok(events);
         } catch (Exception e) {
             log.error("Error getting all events", e);
             return ResponseEntity.badRequest().build();
@@ -115,6 +127,33 @@ public class EventController {
         } catch (Exception e) {
             log.error("Error deleting event: {}", id, e);
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/api/debug")
+    @ResponseBody
+    public String debugEvents() {
+        try {
+            log.info("DEBUG: Checking event data through endpoint");
+            StringBuilder result = new StringBuilder();
+            
+            // Use the endpoint directly instead of casting it
+            List<EventDto> events = eventEndpoint.getAll();
+            
+            result.append("Found ").append(events.size()).append(" events from endpoint:\n\n");
+            
+            for (EventDto event : events) {
+                result.append("ID: ").append(event.getId())
+                      .append(", Title: ").append(event.getTitle())
+                      .append(", StartTime: ").append(event.getStartTime())
+                      .append(", EndTime: ").append(event.getEndTime())
+                      .append("\n");
+            }
+            
+            return result.toString();
+        } catch (Exception e) {
+            log.error("Error in debug endpoint", e);
+            return "Error: " + e.getMessage();
         }
     }
 } 

@@ -21,12 +21,16 @@ public class DefaultLocationMapper implements LocationMapper {
     @Override
     @Transactional(readOnly = true)
     public LocationDto toDto(Location location) {
+        if (location == null) {
+            return null;
+        }
+        
         return LocationDto.builder()
                 .id(location.getId())
+                .placeName(location.getPlaceName())
                 .latitude(location.getLatitude())
                 .longitude(location.getLongitude())
                 .address(location.getAddress())
-                .placeName(location.getPlaceName())
                 .createdAt(location.getCreatedAt())
                 .updatedAt(location.getUpdatedAt())
                 .build();

@@ -45,10 +45,23 @@ public class DefaultEventEndpoint implements EventEndpoint {
     @Override
     @Transactional(readOnly = true)
     public List<EventDto> getAll() throws NotFoundException {
-        List<Event> events = eventService.get(List.of());
-        return events.stream()
+        log.info("Getting all events from database");
+        List<Event> events = eventService.findAll();
+        log.info("Found {} raw events from database", events.size());
+        
+        // Debug log each event
+        for (Event event : events) {
+            log.info("Event from DB: id={}, title={}, startTime={}, endTime={}, location={}", 
+                event.getId(), event.getTitle(), event.getStartTime(), event.getEndTime(), 
+                (event.getLocation() != null ? event.getLocation().getId() : "null"));
+        }
+        
+        List<EventDto> eventDtos = events.stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toList());
+        
+        log.info("Converted {} events to DTOs", eventDtos.size());
+        return eventDtos;
     }
 
     @Override
@@ -182,10 +195,11 @@ public class DefaultEventEndpoint implements EventEndpoint {
                 }
             }
             
-            // Validate event times
+            // Validate event times but allow invalid ones (with warning)
             if (event.getStartTime() != null && event.getEndTime() != null) {
                 if (event.getStartTime().isAfter(event.getEndTime())) {
-                    throw new IllegalArgumentException("Event start time cannot be after end time");
+                    log.warn("Event has invalid dates: start time {} is after end time {}", 
+                            event.getStartTime(), event.getEndTime());
                 }
             }
             
@@ -239,6 +253,14 @@ public class DefaultEventEndpoint implements EventEndpoint {
                 }
             } catch (Exception e) {
                 log.warn("Error fetching image with ID {}, continuing without image: {}", eventRequest.getImageId(), e.getMessage());
+            }
+        }
+        
+        // Check for date issues but allow them (just log a warning)
+        if (updatedEvent.getStartTime() != null && updatedEvent.getEndTime() != null) {
+            if (updatedEvent.getStartTime().isAfter(updatedEvent.getEndTime())) {
+                log.warn("Event has invalid dates: start time {} is after end time {}", 
+                         updatedEvent.getStartTime(), updatedEvent.getEndTime());
             }
         }
         

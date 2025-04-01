@@ -163,7 +163,9 @@
                 
                 // Set image if available
                 if (event.image) {
-                    document.getElementById('event-image').style.backgroundImage = `url(${event.image.filePath})`;
+                    document.getElementById('event-image').style.backgroundImage = `url(/images/${event.image.filePath})`;
+                } else {
+                    document.getElementById('event-image').style.backgroundImage = `url(/images/default-event.jpg)`;
                 }
             }
         </script>
