@@ -38,6 +38,7 @@ public class EventController {
     private final EventEndpoint eventEndpoint;
     private final RegistrationEndpoint registrationEndpoint;
     private final UserEndpoint userEndpoint;
+    private final DefaultEventService eventService;
 
     @GetMapping
     public String eventsPage() {

@@ -10,6 +10,8 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: none;
+            margin-bottom: 20px;
         }
         .event-image {
             height: 300px;
@@ -20,33 +22,79 @@
         .event-meta {
             font-size: 0.9rem;
             color: #6c757d;
+            line-height: 1.8;
         }
         .event-category {
-            background-color: #f1f1f1;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-right: 5px;
-            margin-bottom: 5px;
+            background-color: #fff2f2;
+            border: 1px solid #ffcdd2;
+            color: #dc3545;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-bottom: 8px;
             display: inline-block;
             font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .card-title {
+            border-bottom: 2px solid #f8f9fa;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #dc3545;
+        }
+        .btn-vibe-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        .btn-vibe-primary:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            color: white;
+        }
+        .btn-vibe-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        #map {
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .location-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .icon-red {
+            color: #dc3545;
         }
     </style>
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="container mt-5" id="event-container">
+        <div class="container mt-5 mb-5" id="event-container">
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card event-detail-card mb-4">
+                    <div class="event-detail-card">
                         <div class="event-image" id="event-image"></div>
-                        <div class="card-body">
-                            <h1 class="card-title" id="event-title">Loading event...</h1>
-                            <div class="event-meta mb-3">
-                                <div id="event-datetime"></div>
-                                <div id="event-location"></div>
+                        <div class="card-body p-4">
+                            <h1 class="card-title mb-4" id="event-title">Loading event...</h1>
+                            <div class="event-meta mb-4">
+                                <div id="event-datetime" class="mb-2"></div>
+                                <div id="event-location" class="mb-2"></div>
                                 <div id="event-capacity"></div>
                             </div>
-                            <div id="event-categories" class="mb-3"></div>
+                            <div id="event-categories" class="mb-4"></div>
                             <div class="card-text" id="event-description"></div>
                         </div>
                     </div>
@@ -56,20 +104,23 @@
                         <div class="card-body">
                             <h5 class="card-title">Registration</h5>
                             <div sec:authorize="isAuthenticated()">
-                                <button id="registration-button" class="btn btn-primary w-100">Register</button>
+                                <button id="registration-button" class="btn btn-vibe-primary w-100">Register</button>
                             </div>
                             <div sec:authorize="!isAuthenticated()">
-                                <p>Please <a th:href="@{/auth/login}">login</a> to register for this event.</p>
+                                <p>Please <a th:href="@{/auth/login}" class="text-decoration-none fw-bold">login</a> to register for this event.</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="card mb-4">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Location</h5>
                             <div id="location-details">
-                                <p id="location-address"></p>
-                                <div id="map" style="height: 200px; background-color: #eee;"></div>
+                                <div class="location-info mb-3">
+                                    <i class="fas fa-map-marker-alt icon-red me-2"></i>
+                                    <span id="location-address"></span>
+                                </div>
+                                <div id="map"></div>
                             </div>
                         </div>
                     </div>
@@ -102,7 +153,6 @@
                     // Check if user is authenticated by looking for auth elements
                     const authElements = document.querySelectorAll('[sec\\:authorize="isAuthenticated()"]');
                     if (authElements.length === 0 || authElements[0].style.display === 'none') {
-                        console.log('User is not authenticated, skipping registration status check');
                         return;
                     }
                     
@@ -113,25 +163,18 @@
                     const csrfMeta = document.querySelector('meta[name="_csrf"]');
                     if (csrfMeta && csrfMeta.getAttribute('content')) {
                         headers['X-CSRF-TOKEN'] = csrfMeta.getAttribute('content');
-                        console.log("CSRF token found and applied for registration status check");
                     }
-                    
-                    console.log("Checking registration status for event ID:", eventId);
                     
                     const response = await fetch(`/api/registrations/event/${eventId}`, {
                         headers: headers,
                         credentials: 'same-origin' // Include cookies for authentication
                     });
                     
-                    console.log("Registration status check response:", response.status);
-                    
                     if (!response.ok) {
-                        console.warn('Not checking registration status, status: ' + response.status);
                         return; // User might not be logged in, or other error
                     }
                     
                     const data = await response.json();
-                    console.log("Registration status data:", data);
                     
                     if (data.registered) {
                         // User is already registered for this event
@@ -148,21 +191,19 @@
                 
                 if (isRegistered) {
                     registrationButton.textContent = 'Registered';
-                    registrationButton.classList.remove('btn-primary');
-                    registrationButton.classList.add('btn-success');
+                    registrationButton.classList.remove('btn-vibe-primary');
+                    registrationButton.classList.add('btn-vibe-success');
                     registrationButton.disabled = true;
                 } else {
                     registrationButton.textContent = 'Register';
-                    registrationButton.classList.remove('btn-success');
-                    registrationButton.classList.add('btn-primary');
+                    registrationButton.classList.remove('btn-vibe-success');
+                    registrationButton.classList.add('btn-vibe-primary');
                     registrationButton.disabled = false;
                 }
             }
             
             async function registerForEvent(eventId) {
                 try {
-                    console.log("Attempting to register for event ID:", eventId);
-                    
                     // Check that we have a valid event ID
                     if (!eventId || isNaN(parseInt(eventId))) {
                         throw new Error("Invalid event ID");
@@ -173,8 +214,6 @@
                         // userId will be set by the backend from the authenticated user
                     };
                     
-                    console.log("Sending registration request:", registrationRequest);
-                    
                     const headers = {
                         'Content-Type': 'application/json'
                     };
@@ -184,9 +223,6 @@
                     const csrfMeta = document.querySelector('meta[name="_csrf"]');
                     if (csrfMeta && csrfMeta.getAttribute('content')) {
                         headers['X-CSRF-TOKEN'] = csrfMeta.getAttribute('content');
-                        console.log("CSRF token found and applied");
-                    } else {
-                        console.log("No CSRF token found, CSRF might be disabled");
                     }
                     
                     const response = await fetch('/api/registrations', {
@@ -196,13 +232,10 @@
                         credentials: 'same-origin'  // Include cookies for authentication
                     });
                     
-                    console.log("Registration response status:", response.status);
-                    
                     if (!response.ok) {
                         let errorMessage = "Failed to register for event";
                         try {
                             const errorData = await response.json();
-                            console.error("Registration error details:", errorData);
                             if (errorData.error) {
                                 errorMessage = errorData.error;
                             } else if (errorData.message) {
@@ -211,14 +244,13 @@
                                 errorMessage = errorData;
                             }
                         } catch (e) {
-                            console.error("Could not parse error response:", e);
+                            // Unable to parse error response
                         }
                         throw new Error(errorMessage);
                     }
                     
                     // Registration successful
                     const result = await response.json();
-                    console.log('Registration successful', result);
                     
                     // Update UI to show registered status
                     updateRegistrationButton(true);
@@ -226,7 +258,6 @@
                     // Optionally show a success message
                     alert('You have successfully registered for this event!');
                 } catch (error) {
-                    console.error('Registration error:', error);
                     alert('Error registering for event: ' + error.message);
                 }
             }
@@ -241,7 +272,6 @@
                     const event = await response.json();
                     displayEventDetails(event);
                 } catch (error) {
-                    console.error('Error fetching event details:', error);
                     document.getElementById('event-container').innerHTML = 
                         `<div class="alert alert-danger">Error loading event: ${error.message}</div>`;
                 }
@@ -263,7 +293,7 @@
                 
                 // Set date/time
                 const dateTimeHtml = `
-                    <i class="fas fa-calendar-alt me-2"></i>
+                    <i class="fas fa-calendar-alt icon-red me-2"></i>
                     <span>${startDate.toLocaleDateString(undefined, dateOptions)}</span>
                     <span class="mx-2">|</span>
                     <span>${startDate.toLocaleTimeString(undefined, timeOptions)} - ${endDate.toLocaleTimeString(undefined, timeOptions)}</span>
@@ -273,7 +303,7 @@
                 // Set location
                 if (event.location) {
                     const locationHtml = `
-                        <i class="fas fa-map-marker-alt me-2 mt-2"></i>
+                        <i class="fas fa-map-marker-alt icon-red me-2"></i>
                         <span>${event.location.placeName}</span>
                     `;
                     document.getElementById('event-location').innerHTML = locationHtml;
@@ -288,7 +318,7 @@
                 // Set capacity
                 if (event.capacity) {
                     const capacityHtml = `
-                        <i class="fas fa-users me-2 mt-2"></i>
+                        <i class="fas fa-users icon-red me-2"></i>
                         <span>Capacity: ${event.capacity}</span>
                     `;
                     document.getElementById('event-capacity').innerHTML = capacityHtml;
@@ -417,7 +447,6 @@
                         createLegacyMarker(map, eventLocation, location);
                     }
                 } catch (error) {
-                    console.error('Error creating advanced marker:', error);
                     // Fallback to classic Marker
                     createLegacyMarker(map, eventLocation, location);
                 }

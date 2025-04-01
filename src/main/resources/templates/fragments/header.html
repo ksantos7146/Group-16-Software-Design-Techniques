@@ -12,7 +12,7 @@
             </div>
             <div class="nav-links">
                 <a th:href="@{/events}">Events</a>
-                <a th:href="@{/events/create}" sec:authorize="isAuthenticated()">Create Event</a>
+                <a th:href="@{/events/create-new}" sec:authorize="isAuthenticated()">Create Event</a>
                 <div class="auth-links" sec:authorize="!isAuthenticated()">
                     <a th:href="@{/auth/login}">Login</a>
                     <a th:href="@{/auth/register}">Register</a>

@@ -8,49 +8,100 @@
         .form-group {
             margin-bottom: 1rem;
         }
+        .btn-vibe-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        .btn-vibe-primary:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            color: white;
+        }
+        .btn-vibe-outline {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-vibe-outline:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .card-header {
+            background-color: #dc3545;
+            color: white;
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
+            padding: 15px 20px;
+        }
+        .vibe-section-title {
+            border-left: 4px solid #dc3545;
+            padding-left: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        #map {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .image-preview-card {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        #imagePreview {
+            width: 100%;
+            object-fit: cover;
+            height: 200px;
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="container mt-5">
+        <div class="container mt-5 mb-5">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="text-center">Create New Event</h3>
+                            <h3 class="text-center m-0">Create New Event</h3>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-4">
                             <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
                             <form id="createEventForm">
                                 <div class="form-group mb-3">
-                                    <label for="title">Event Title</label>
+                                    <label for="title" class="form-label">Event Title</label>
                                     <input type="text" class="form-control" id="title" name="title" required>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="description">Description</label>
+                                    <label for="description" class="form-label">Description</label>
                                     <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label for="startTime">Start Date/Time</label>
+                                            <label for="startTime" class="form-label">Start Date/Time</label>
                                             <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label for="endTime">End Date/Time</label>
+                                            <label for="endTime" class="form-label">End Date/Time</label>
                                             <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="capacity">Capacity</label>
+                                    <label for="capacity" class="form-label">Capacity</label>
                                     <input type="number" class="form-control" id="capacity" name="capacity" min="1">
                                     <small class="form-text text-muted">Leave empty for unlimited capacity</small>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="categories">Categories</label>
+                                    <label for="categories" class="form-label">Categories</label>
                                     <select class="form-select" id="categories" name="categories" multiple>
                                         <option value="MUSIC">Music</option>
                                         <option value="ARTS">Arts</option>
@@ -66,26 +117,27 @@
                                     <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple categories</small>
                                 </div>
                                 
-                                <div class="form-group mb-3">
-                                    <label for="eventImage">Event Image</label>
-                                    <div class="input-group">
+                                <h5 class="vibe-section-title">Event Image</h5>
+                                <div class="form-group mb-4">
+                                    <div class="input-group mb-3">
                                         <input type="file" class="form-control" id="eventImage" accept="image/*">
-                                        <button class="btn btn-outline-secondary" type="button" id="uploadImageBtn">Upload</button>
+                                        <button class="btn btn-vibe-outline" type="button" id="uploadImageBtn">Upload</button>
                                     </div>
                                     <div id="uploadStatusContainer" class="mt-2" style="display: none;">
                                         <div class="progress">
-                                            <div id="uploadProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" 
+                                            <div id="uploadProgressBar" class="progress-bar bg-danger" role="progressbar" style="width: 0%;" 
                                                  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                                         </div>
                                         <div id="uploadStatus" class="form-text"></div>
                                     </div>
-                                    <div id="imagePreviewContainer" class="mt-2" style="display: none;">
-                                        <div class="card">
-                                            <img id="imagePreview" class="card-img-top" style="max-height: 200px; object-fit: cover;">
+                                    <div id="imagePreviewContainer" class="mt-3" style="display: none;">
+                                        <div class="card image-preview-card">
+                                            <img id="imagePreview" class="card-img-top">
                                             <div class="card-body">
-                                                <h6 class="card-title">Image Preview</h6>
-                                                <p id="imageInfo" class="card-text small"></p>
-                                                <button type="button" class="btn btn-sm btn-danger" id="removeImageBtn">Remove</button>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>Image uploaded successfully</div>
+                                                    <button type="button" class="btn btn-sm btn-danger" id="removeImageBtn">Remove</button>
+                                                </div>
                                             </div>
                                         </div>
                                         <input type="hidden" id="imageId" name="imageId">
@@ -93,31 +145,31 @@
                                     <small class="form-text text-muted">Upload an image for your event (maximum size: 5MB)</small>
                                 </div>
                                 
-                                <h5 class="mt-4">Event Location</h5>
+                                <h5 class="vibe-section-title">Event Location</h5>
                                 <div id="locationForm">
                                     <div class="form-group mb-3">
-                                        <label for="placeName">Location Name</label>
+                                        <label for="placeName" class="form-label">Location Name</label>
                                         <input type="text" class="form-control" id="placeName" name="placeName" required>
                                     </div>
                                     <div class="form-group mb-3">
-                                        <label for="address">Address</label>
+                                        <label for="address" class="form-label">Address</label>
                                         <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
                                     </div>
                                     <div class="form-group mb-3">
-                                        <label>Select Location on Map</label>
+                                        <label for="map" class="form-label">Select Location on Map</label>
                                         <div id="map" style="height: 400px; width: 100%;"></div>
                                         <p class="mt-2 small text-muted">Click on the map to place a marker at your event location</p>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group mb-3">
-                                                <label for="latitude">Latitude</label>
+                                                <label for="latitude" class="form-label">Latitude</label>
                                                 <input type="number" step="0.000001" class="form-control" id="latitude" name="latitude" readonly required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group mb-3">
-                                                <label for="longitude">Longitude</label>
+                                                <label for="longitude" class="form-label">Longitude</label>
                                                 <input type="number" step="0.000001" class="form-control" id="longitude" name="longitude" readonly required>
                                             </div>
                                         </div>
@@ -125,7 +177,7 @@
                                 </div>
                                 
                                 <div class="d-grid gap-2 mt-4">
-                                    <button type="submit" class="btn btn-primary">Create Event</button>
+                                    <button type="submit" class="btn btn-vibe-primary btn-lg">Create Event</button>
                                 </div>
                             </form>
                         </div>
@@ -457,12 +509,10 @@
                                 
                                 if (!response.ok) {
                                     const errorText = await response.text();
-                                    console.error('Upload error response:', errorText);
                                     throw new Error(errorText || 'Image upload failed');
                                 }
                                 
                                 const data = await response.json();
-                                console.log('Upload response:', data);
                                 
                                 // Store the image ID and display preview
                                 imageIdInput.value = data.id;
@@ -470,9 +520,6 @@
                                 // Create a preview URL from the base64 data
                                 imagePreview.src = `data:${file.type};base64,${base64String}`;
                                 imagePreviewContainer.style.display = 'block';
-                                
-                                // Set image info text
-                                document.getElementById('imageInfo').textContent = `ID: ${data.id} | File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
                                 
                                 // Hide status after a delay
                                 setTimeout(() => {
@@ -486,7 +533,6 @@
                                 document.getElementById('uploadStatus').textContent = 'Upload failed: ' + error.message;
                                 document.getElementById('uploadProgressBar').classList.add('bg-danger');
                                 alert('Failed to upload image: ' + error.message);
-                                console.error('Upload error:', error);
                             } finally {
                                 uploadImageBtn.textContent = 'Upload';
                                 uploadImageBtn.disabled = false;
@@ -536,7 +582,6 @@
                             imagePreviewContainer.style.display = 'none';
                         } catch (error) {
                             alert('Failed to remove image: ' + error.message);
-                            console.error('Delete error:', error);
                         }
                     }
                 });
@@ -592,14 +637,6 @@
                             imageId: document.getElementById('imageId').value || null
                         };
                         
-                        // Log detailed information about the image ID
-                        const imageId = document.getElementById('imageId').value;
-                        console.log('Image ID for event creation:', imageId);
-                        console.log('Image ID element value:', document.getElementById('imageId').value);
-                        console.log('Image ID element:', document.getElementById('imageId'));
-                        console.log('Is imageId present in request?', eventData.imageId !== null);
-                        console.log('Event data being sent:', JSON.stringify(eventData, null, 2));
-                        
                         const eventResponse = await fetch('/events', {
                             method: 'POST',
                             headers: {
@@ -610,19 +647,17 @@
                         
                         if (!eventResponse.ok) {
                             const errorText = await eventResponse.text();
-                            console.error('Server error response:', errorText);
                             throw new Error(`Failed to create event: ${errorText || eventResponse.statusText}`);
                         }
                         
                         const eventResult = await eventResponse.json();
-                        console.log('Event created successfully:', eventResult);
                         
                         // Redirect to event detail page
                         window.location.href = '/events/' + eventResult.id;
                     } catch (error) {
                         errorMessage.textContent = error.message;
                         errorMessage.style.display = 'block';
-                        console.error('Error creating event:', error);
+                        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 });
             });
