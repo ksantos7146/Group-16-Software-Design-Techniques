@@ -281,7 +281,8 @@
                     // Set address in location card
                     document.getElementById('location-address').textContent = event.location.address;
                     
-                    // Here you could initialize a map with the coordinates
+                    // Initialize the map with the event location
+                    initializeLocationMap(event.location);
                 }
                 
                 // Set capacity
@@ -311,6 +312,143 @@
                 } else {
                     document.getElementById('event-image').style.backgroundImage = `url(/api/images/default-event)`;
                 }
+            }
+
+            // Function to initialize the map
+            function initializeLocationMap(location) {
+                // Check if the Google Maps API is already loaded
+                if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+                    // Load Google Maps API
+                    loadGoogleMapsScript(() => {
+                        createMap(location);
+                    });
+                } else {
+                    // Google Maps API is already loaded, create the map
+                    createMap(location);
+                }
+            }
+
+            // Function to load the Google Maps API
+            async function loadGoogleMapsScript(callback) {
+                try {
+                    // Fetch API key from server
+                    const response = await fetch('/api/config/maps-api-key');
+                    const data = await response.json();
+                    const apiKey = data.apiKey;
+                    
+                    // Create the script with the API key using recommended loading patterns
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=marker&callback=initMap`;
+                    script.async = true;
+                    script.defer = true;
+                    
+                    // Define the callback function globally
+                    window.initMap = function() {
+                        // Remove the global reference once used
+                        const callbackFn = callback;
+                        window.initMap = null;
+                        // Call the actual callback function
+                        callbackFn();
+                    };
+                    
+                    document.head.appendChild(script);
+                } catch (error) {
+                    console.error('Error loading Google Maps API:', error);
+                    alert('Could not load the map. Please try again later.');
+                }
+            }
+
+            // Function to create the map
+            function createMap(location) {
+                const mapElement = document.getElementById('map');
+                
+                if (!mapElement) {
+                    console.error('Map element not found');
+                    return;
+                }
+                
+                // Create a map centered at the event location
+                const eventLocation = {
+                    lat: location.latitude,
+                    lng: location.longitude
+                };
+                
+                const map = new google.maps.Map(mapElement, {
+                    zoom: 14,
+                    center: eventLocation,
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true,
+                });
+                
+                try {
+                    // Try to use AdvancedMarkerElement if available
+                    if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+                        // Create marker content
+                        const markerContent = document.createElement('div');
+                        
+                        // Create an AdvancedMarkerElement
+                        const marker = new google.maps.marker.AdvancedMarkerElement({
+                            position: eventLocation,
+                            map: map,
+                            title: location.placeName,
+                            content: markerContent
+                        });
+                        
+                        // Create an info window with the event details
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `
+                                <div>
+                                    <strong>${location.placeName}</strong>
+                                    <p>${location.address}</p>
+                                </div>
+                            `
+                        });
+                        
+                        // Open the info window when the marker is clicked
+                        marker.addListener('click', () => {
+                            infoWindow.open(map, marker);
+                        });
+                        
+                        // Initially open the info window
+                        infoWindow.open(map, marker);
+                    } else {
+                        // Fallback to classic Marker
+                        createLegacyMarker(map, eventLocation, location);
+                    }
+                } catch (error) {
+                    console.error('Error creating advanced marker:', error);
+                    // Fallback to classic Marker
+                    createLegacyMarker(map, eventLocation, location);
+                }
+            }
+
+            // Fallback function to create legacy marker
+            function createLegacyMarker(map, eventLocation, locationData) {
+                // Add a marker for the event location using legacy Marker
+                const marker = new google.maps.Marker({
+                    position: eventLocation,
+                    map: map,
+                    title: locationData.placeName
+                });
+                
+                // Create an info window with the event details
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div>
+                            <strong>${locationData.placeName}</strong>
+                            <p>${locationData.address}</p>
+                        </div>
+                    `
+                });
+                
+                // Open the info window when the marker is clicked
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+                
+                // Initially open the info window
+                infoWindow.open(map, marker);
             }
         </script>
     </th:block>
