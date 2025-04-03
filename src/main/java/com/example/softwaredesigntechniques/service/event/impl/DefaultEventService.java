@@ -27,52 +27,52 @@ public class DefaultEventService extends DefaultBaseService<Event, Long> impleme
 
     @Override
     public List<Event> findByTitle(String title) {
-        return eventRepository.findByTitle(title);
+        return eventRepository.findByTitleAndDeletedByIsNull(title);
     }
 
     @Override
     public List<Event> findByTitleContainingIgnoreCase(String title) {
-        return eventRepository.findByTitleContainingIgnoreCase(title);
+        return eventRepository.findByTitleContainingIgnoreCaseAndDeletedByIsNull(title);
     }
 
     @Override
     public List<Event> findByStartTimeBetween(LocalDateTime start, LocalDateTime end) {
-        return eventRepository.findByStartTimeBetween(start, end);
+        return eventRepository.findByStartTimeBetweenAndDeletedByIsNull(start, end);
     }
 
     @Override
     public List<Event> findByEndTimeBetween(LocalDateTime start, LocalDateTime end) {
-        return eventRepository.findByEndTimeBetween(start, end);
+        return eventRepository.findByEndTimeBetweenAndDeletedByIsNull(start, end);
     }
 
     @Override
     public List<Event> findByCapacityGreaterThan(Integer capacity) {
-        return eventRepository.findByCapacityGreaterThan(capacity);
+        return eventRepository.findByCapacityGreaterThanAndDeletedByIsNull(capacity);
     }
 
     @Override
     public List<Event> findByCategoriesContaining(Category category) {
-        return eventRepository.findByCategoriesContaining(category);
+        return eventRepository.findByCategoriesContainingAndDeletedByIsNull(category);
     }
 
     @Override
     public List<Event> findByCategoriesIn(Set<Category> categories) {
-        return eventRepository.findByCategoriesIn(categories);
+        return eventRepository.findByCategoriesInAndDeletedByIsNull(categories);
     }
 
     @Override
     public List<Event> findByLocationId(Long locationId) {
-        return eventRepository.findByLocationId(locationId);
+        return eventRepository.findByLocationIdAndDeletedByIsNull(locationId);
     }
 
     @Override
     public List<Event> findByImageId(Long imageId) {
-        return eventRepository.findByImageId(imageId);
+        return eventRepository.findByImageIdAndDeletedByIsNull(imageId);
     }
 
     @Override
     public List<Event> findAll() {
-        return eventRepository.findAll();
+        return eventRepository.findByDeletedByIsNull();
     }
 
     public EventRepository getEventRepository() {

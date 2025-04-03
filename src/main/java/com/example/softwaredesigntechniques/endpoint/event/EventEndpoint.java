@@ -15,7 +15,7 @@ public interface EventEndpoint {
     EventDto get(Long id) throws NotFoundException;
 
     @Transactional(readOnly = true)
-    List<EventDto> getAll() throws NotFoundException;
+    List<EventDto> getAll();
 
     @Transactional(readOnly = true)
     List<EventDto> findByTitle(String title);

@@ -36,37 +36,37 @@ public class DefaultUserService extends DefaultBaseService<User, Long> implement
     @Override
     @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsernameAndDeletedByIsNull(username);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmailAndDeletedByIsNull(email);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<User> findByFirstName(String firstName) {
-        return userRepository.findByFirstName(firstName);
+        return userRepository.findByFirstNameAndDeletedByIsNull(firstName);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<User> findByLastName(String lastName) {
-        return userRepository.findByLastName(lastName);
+        return userRepository.findByLastNameAndDeletedByIsNull(lastName);
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return userRepository.existsByUsernameAndDeletedByIsNull(username);
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+        return userRepository.existsByEmailAndDeletedByIsNull(email);
     }
 
     @Override

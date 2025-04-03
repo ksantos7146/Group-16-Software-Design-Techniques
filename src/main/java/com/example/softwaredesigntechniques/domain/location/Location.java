@@ -2,6 +2,7 @@ package com.example.softwaredesigntechniques.domain.location;
 
 import com.example.softwaredesigntechniques.domain.common.RemovalEntity;
 import com.example.softwaredesigntechniques.domain.event.Event;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ public class Location extends RemovalEntity {
     private String address;
     private String placeName;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "location")
     private Set<Event> events = new HashSet<>();
 } 

@@ -111,7 +111,10 @@
                     <div class="card event-card h-100">
                         <div class="event-image" th:style="'background-image: url(' + (${event.image != null && event.image.id != null} ? @{'/api/images/' + ${event.image.id}} : @{'/api/images/default-event'}) + ')'"></div>
                         <div class="card-body">
-                            <div class="event-category" th:text="${event.category}">Category</div>
+                            <div class="mb-2">
+                                <span class="event-category" th:each="category : ${event.categories}" 
+                                      th:text="${category.toString().toLowerCase().replace('_', ' ')}"></span>
+                            </div>
                             <h5 class="card-title" th:text="${event.title}">Event Title</h5>
                             <p class="card-text" th:text="${#strings.length(event.description) > 100 ? #strings.substring(event.description, 0, 100) + '...' : event.description}">Description</p>
                             <div class="event-meta">

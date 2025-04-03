@@ -12,10 +12,94 @@
     <!-- using namespace std; --> <!-- Student comment -->
     <style>
         .hero-section {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            padding: 100px 0;
+            margin-bottom: 60px;
+            border-radius: 0 0 30px 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: url('/images/pattern.svg') repeat;
+            opacity: 0.1;
+        }
+        
+        .hero-section h1 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-section .lead {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .vibe-section {
+            background: #f8f9fa;
             padding: 80px 0;
-            margin-bottom: 40px;
-            border-radius: 0 0 10px 10px;
+            margin: 60px 0;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vibe-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(220,53,69,0.1) 0%, rgba(253,126,20,0.1) 100%);
+            border-radius: 50%;
+            transform: translate(150px, -150px);
+        }
+        
+        .vibe-section h2 {
+            color: #dc3545;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .vibe-feature {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            height: 100%;
+            transition: transform 0.3s;
+        }
+        
+        .vibe-feature:hover {
+            transform: translateY(-10px);
+        }
+        
+        .vibe-feature i {
+            font-size: 2.5rem;
+            color: #dc3545;
+            margin-bottom: 1.5rem;
+        }
+        
+        .vibe-feature h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .vibe-feature p {
+            color: #6c757d;
+            margin-bottom: 0;
         }
         
         .event-card {
@@ -37,10 +121,37 @@
             object-fit: cover;
         }
         
-        .event-card .card-title {
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: #333;
+        .event-carousel {
+            margin-bottom: 60px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .carousel-item {
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .carousel-caption {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 20px;
+            bottom: 40px;
+        }
+        
+        .carousel-indicators {
+            margin-bottom: 20px;
+        }
+        
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            opacity: 0.8;
+        }
+        
+        .carousel-control-prev:hover, .carousel-control-next:hover {
+            opacity: 1;
         }
         
         .event-date {
@@ -85,23 +196,33 @@
             background-color: #dc3545;
             border-color: #dc3545;
             color: white;
+            padding: 10px 25px;
+            font-weight: 600;
+            border-radius: 25px;
         }
         
         .btn-vibe-primary:hover {
             background-color: #c82333;
             border-color: #bd2130;
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .btn-vibe-outline {
             background-color: transparent;
-            border-color: #dc3545;
-            color: #dc3545;
+            border-color: white;
+            color: white;
+            padding: 10px 25px;
+            font-weight: 600;
+            border-radius: 25px;
         }
         
         .btn-vibe-outline:hover {
-            background-color: #dc3545;
-            color: white;
+            background-color: white;
+            color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .categories-section {
@@ -163,22 +284,59 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
-                        <h1 class="display-4 fw-bold mb-4">Find Your Next Experience</h1>
-                        <p class="lead mb-4">Discover exciting events in your area, connect with people, and create unforgettable memories.</p>
-                        <div class="d-flex flex-wrap">
-                            <a href="/events/all" class="btn btn-vibe-primary me-2 mb-2">Browse Events</a>
-                            <a href="/events/create-new" class="btn btn-vibe-outline mb-2">Host an Event</a>
+                        <h1 class="display-4 fw-bold">Experience the Vibe</h1>
+                        <p class="lead">Join a vibrant community of event enthusiasts. Discover, create, and share unforgettable moments with people who share your interests.</p>
+                        <div class="d-flex flex-wrap gap-3">
+                            <a href="/events/all" class="btn btn-light btn-lg">
+                                <i class="fas fa-compass me-2"></i>Explore Events
+                            </a>
+                            <a href="/events/create-new" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Host Event
+                            </a>
                         </div>
                     </div>
                     <div class="col-lg-6 d-none d-lg-block">
-                        <img src="/images/hero-illustration.svg" alt="Events Illustration" class="img-fluid" 
-                             onerror="this.onerror=null; this.src='/images/event-placeholder.jpg';">
+                        <img src="/images/event-illustration.svg" alt="Events Illustration" class="img-fluid" 
+                             onerror="this.src='https://cdn.jsdelivr.net/gh/Tarikul-Islam-Anik/Animated-Fluent-Emojis/Emojis/Activities/Party%20Popper.png'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vibe With Us Section -->
+        <section class="vibe-section">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2>Vibe With Us</h2>
+                    <p class="lead text-muted">Join our community and experience events like never before</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="vibe-feature">
+                            <i class="fas fa-users"></i>
+                            <h3>Connect</h3>
+                            <p>Meet like-minded people and build meaningful connections through shared experiences.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="vibe-feature">
+                            <i class="fas fa-star"></i>
+                            <h3>Experience</h3>
+                            <p>Discover unique events and create memories that will last a lifetime.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="vibe-feature">
+                            <i class="fas fa-heart"></i>
+                            <h3>Share</h3>
+                            <p>Create your own events and share your passions with the community.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
         
-        <!-- Featured Events Section -->
+        <!-- Featured Events Carousel -->
         <section class="container mb-5">
             <h2 class="section-title">Featured Events</h2>
             
@@ -188,7 +346,26 @@
                 <span th:text="${error}">Error loading events</span>
             </div>
             
-            <div class="row" id="featured-events-container">
+            <!-- Carousel -->
+            <div id="featuredEventsCarousel" class="carousel slide event-carousel" data-bs-ride="carousel">
+                <div class="carousel-indicators" id="carousel-indicators">
+                    <!-- Indicators will be added dynamically -->
+                </div>
+                <div class="carousel-inner" id="carousel-inner">
+                    <!-- Carousel items will be added dynamically -->
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#featuredEventsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#featuredEventsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            
+            <!-- Regular event cards -->
+            <div class="row mt-5" id="featured-events-container">
                 <!-- Events will be loaded here -->
                 <div class="col-12 text-center" id="events-loading">
                     <div class="spinner-border text-danger" role="status">
@@ -197,10 +374,10 @@
                 </div>
             </div>
         </section>
-        
+
         <!-- Popular Categories -->
         <section class="categories-section">
-            <div class="container">
+        <div class="container">
                 <h2 class="section-title text-center">Explore Categories</h2>
                 <div class="row g-4">
                     <div class="col-md-4 col-sm-6">
@@ -211,9 +388,9 @@
                                 </div>
                                 <h3>Music</h3>
                                 <p class="text-muted">Concerts, live performances, and music festivals</p>
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                </div>
                     <div class="col-md-4 col-sm-6">
                         <a href="/events/all?category=FOOD_AND_DRINK" class="text-decoration-none">
                             <div class="category-card">
@@ -222,9 +399,9 @@
                                 </div>
                                 <h3>Food & Drink</h3>
                                 <p class="text-muted">Culinary experiences, tastings, and food festivals</p>
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                </div>
                     <div class="col-md-4 col-sm-6">
                         <a href="/events/all?category=ARTS" class="text-decoration-none">
                             <div class="category-card">
@@ -233,9 +410,9 @@
                                 </div>
                                 <h3>Arts</h3>
                                 <p class="text-muted">Exhibitions, galleries, and creative workshops</p>
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                </div>
                     <div class="col-md-4 col-sm-6">
                         <a href="/events/all?category=SPORTS" class="text-decoration-none">
                             <div class="category-card">
@@ -244,9 +421,9 @@
                                 </div>
                                 <h3>Sports</h3>
                                 <p class="text-muted">Matches, tournaments, and fitness activities</p>
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                </div>
                     <div class="col-md-4 col-sm-6">
                         <a href="/events/all?category=TECH" class="text-decoration-none">
                             <div class="category-card">
@@ -255,9 +432,9 @@
                                 </div>
                                 <h3>Tech</h3>
                                 <p class="text-muted">Conferences, workshops, and hackathons</p>
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                </div>
                     <div class="col-md-4 col-sm-6">
                         <a href="/events/categories-view" class="text-decoration-none">
                             <div class="category-card">
@@ -266,122 +443,171 @@
                                 </div>
                                 <h3>All Categories</h3>
                                 <p class="text-muted">Browse all event categories</p>
-                            </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                </div>
                 </div>
             </div>
         </section>
-    </div>
-    
+        </div>
+
     <th:block layout:fragment="scripts">
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Fetch featured events
-                fetchFeaturedEvents();
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap carousel
+            new bootstrap.Carousel(document.getElementById('featuredEventsCarousel'), {
+                interval: 5000,
+                touch: true
             });
             
-            async function fetchFeaturedEvents() {
-                try {
-                    const response = await fetch('/events/api/featured');
-                    
-                    // Check if response is ok before trying to parse JSON
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    
-                    const events = await response.json();
-                    
-                    // Hide loading spinner
-                    document.getElementById('events-loading').style.display = 'none';
-                    
-                    if (!events || events.length === 0) {
-                        const container = document.getElementById('featured-events-container');
-                        container.innerHTML = '<div class="col-12"><div class="alert alert-info">No featured events available at the moment. Check back soon!</div></div>';
-                        return;
-                    }
-                    
-                    // Display events
-                    displayEvents(events);
-                } catch (error) {
-                    console.error('Error fetching events:', error);
-                    document.getElementById('events-loading').style.display = 'none';
-                    const container = document.getElementById('featured-events-container');
-                    container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Error loading events. Please try again later.</div></div>';
+            // Fetch featured events
+            fetchFeaturedEvents();
+        });
+        
+        async function fetchFeaturedEvents() {
+            try {
+                const response = await fetch('/events/api/featured');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            }
-            
-            function displayEvents(events) {
-                try {
+                
+                const events = await response.json();
+                
+                // Hide loading spinner
+                document.getElementById('events-loading').style.display = 'none';
+                
+                if (!events || events.length === 0) {
                     const container = document.getElementById('featured-events-container');
-                    
-                    // Clear the container
-                    container.innerHTML = '';
-                    
-                    // Add event cards
-                    events.forEach(event => {
-                        // Format date
-                        const eventDate = new Date(event.startTime);
-                        const formattedDate = eventDate.toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                        
-                        // Create event card
-                        const eventCard = document.createElement('div');
-                        eventCard.className = 'col-lg-4 col-md-6';
-                        
-                        // Determine image source
-                        let imageSrc;
-                        if (event.image && event.image.id) {
-                            imageSrc = `/api/images/${event.image.id}`;
-                        } else {
-                            imageSrc = `/api/images/default-event`;
-                        }
-                        
-                        // Create categories HTML
-                        let categoriesHtml = '';
-                        if (event.categories && event.categories.length > 0) {
-                            event.categories.forEach(category => {
-                                categoriesHtml += `<span class="event-category">${category.replaceAll('_', ' ').toLowerCase()}</span>`;
-                            });
-                        }
-                        
-                        // Set card content
-                        eventCard.innerHTML = `
-                            <div class="card event-card">
-                                <img src="${imageSrc}" class="card-img-top" alt="${event.title}" onerror="this.src='/images/event-placeholder.jpg'">
-                                <div class="card-body">
-                                    <h5 class="card-title">${event.title}</h5>
-                                    <div class="mb-2">
-                                        <div class="event-date mb-1">
-                                            <i class="far fa-calendar-alt me-2"></i>${formattedDate}
-                                        </div>
-                                        <div class="event-location">
-                                            <i class="fas fa-map-marker-alt me-2"></i>${event.location ? event.location.placeName : 'Location TBA'}
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        ${categoriesHtml}
-                                    </div>
-                                    <a href="/events/details/${event.id}" class="btn btn-vibe-outline btn-sm">View Details</a>
+                    container.innerHTML = '<div class="col-12"><div class="alert alert-info">No featured events available at the moment. Check back soon!</div></div>';
+                    return;
+                }
+                
+                // Display events in both carousel and cards
+                displayCarouselEvents(events.slice(0, 5)); // Show first 5 events in carousel
+                displayEventCards(events); // Show all events in cards
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                document.getElementById('events-loading').style.display = 'none';
+                const container = document.getElementById('featured-events-container');
+                container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Error loading events. Please try again later.</div></div>';
+            }
+        }
+        
+        function displayCarouselEvents(events) {
+            const carouselInner = document.getElementById('carousel-inner');
+            const indicators = document.getElementById('carousel-indicators');
+            
+            events.forEach((event, index) => {
+                // Create carousel item
+                const item = document.createElement('div');
+                item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+                
+                // Determine image source
+                let imageSrc = event.image && event.image.id 
+                    ? `/api/images/${event.image.id}` 
+                    : '/images/event-placeholder.jpg';
+                
+                // Format date
+                const eventDate = new Date(event.startTime);
+                const formattedDate = eventDate.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                item.innerHTML = `
+                    <div class="carousel-item-bg" style="
+                        height: 400px;
+                        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${imageSrc}');
+                        background-size: cover;
+                        background-position: center;
+                    ">
+                        <div class="carousel-caption">
+                            <h3>${event.title}</h3>
+                            <p class="mb-2">
+                                <i class="far fa-calendar-alt me-2"></i>${formattedDate}<br>
+                                <i class="fas fa-map-marker-alt me-2"></i>${event.location ? event.location.placeName : 'Location TBA'}
+                            </p>
+                            <a href="/events/details/${event.id}" class="btn btn-vibe-primary">View Details</a>
+                        </div>
+                    </div>
+                `;
+                
+                carouselInner.appendChild(item);
+                
+                // Create indicator
+                const indicator = document.createElement('button');
+                indicator.setAttribute('type', 'button');
+                indicator.setAttribute('data-bs-target', '#featuredEventsCarousel');
+                indicator.setAttribute('data-bs-slide-to', index.toString());
+                if (index === 0) indicator.classList.add('active');
+                indicator.setAttribute('aria-current', 'true');
+                indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+                
+                indicators.appendChild(indicator);
+            });
+        }
+        
+        function displayEventCards(events) {
+            const container = document.getElementById('featured-events-container');
+            container.innerHTML = ''; // Clear container
+            
+            events.forEach(event => {
+                // Format date
+                const eventDate = new Date(event.startTime);
+                const formattedDate = eventDate.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // Create event card
+                const eventCard = document.createElement('div');
+                eventCard.className = 'col-lg-4 col-md-6';
+                
+                // Determine image source
+                let imageSrc = event.image && event.image.id 
+                    ? `/api/images/${event.image.id}` 
+                    : '/images/event-placeholder.jpg';
+                
+                // Create categories HTML
+                let categoriesHtml = '';
+                if (event.categories && event.categories.length > 0) {
+                    event.categories.forEach(category => {
+                        categoriesHtml += `<span class="event-category">${category.replaceAll('_', ' ').toLowerCase()}</span>`;
+                    });
+                }
+                
+                eventCard.innerHTML = `
+                    <div class="card event-card">
+                        <img src="${imageSrc}" class="card-img-top" alt="${event.title}" onerror="this.src='/images/event-placeholder.jpg'">
+                        <div class="card-body">
+                            <h5 class="card-title">${event.title}</h5>
+                            <div class="mb-2">
+                                <div class="event-date mb-1">
+                                    <i class="far fa-calendar-alt me-2"></i>${formattedDate}
+                                </div>
+                                <div class="event-location">
+                                    <i class="fas fa-map-marker-alt me-2"></i>${event.location ? event.location.placeName : 'Location TBA'}
                                 </div>
                             </div>
-                        `;
-                        
-                        // Add card to container
-                        container.appendChild(eventCard);
-                    });
-                } catch (error) {
-                    console.error('Error displaying events:', error);
-                    const container = document.getElementById('featured-events-container');
-                    container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Error displaying events. Please try again later.</div></div>';
-                }
-            }
-        </script>
+                            <div class="mb-3">
+                                ${categoriesHtml}
+                            </div>
+                            <a href="/events/details/${event.id}" class="btn btn-vibe-outline btn-sm">View Details</a>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(eventCard);
+            });
+        }
+    </script>
     </th:block>
 </body>
 </html>

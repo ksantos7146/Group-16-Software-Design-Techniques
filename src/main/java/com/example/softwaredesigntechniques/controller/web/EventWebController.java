@@ -39,19 +39,20 @@ public class EventWebController {
     @GetMapping("/vibe-events")
     public String index(Model model) {
         try {
-            // Add empty events list to prevent errors if the JavaScript fetch fails
-            model.addAttribute("featuredEvents", List.of());
-            
-            // You can add more model attributes here if needed by the index template
-            return "index";
+            List<Event> events = eventService.findAll();
+            model.addAttribute("events", events);
+            model.addAttribute("pageTitle", "All Events");
+            return "events/list";
         } catch (Exception e) {
             // Log the error
-            System.err.println("Error rendering index page: " + e.getMessage());
+            System.err.println("Error loading events: " + e.getMessage());
             e.printStackTrace();
             
             // Add error message to the model
-            model.addAttribute("error", "An error occurred while loading the home page. Please try again later.");
-            return "index";
+            model.addAttribute("error", "An error occurred while loading events. Please try again later.");
+            model.addAttribute("events", List.of());
+            model.addAttribute("pageTitle", "All Events");
+            return "events/list";
         }
     }
 

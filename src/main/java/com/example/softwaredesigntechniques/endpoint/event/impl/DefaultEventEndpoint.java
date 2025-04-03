@@ -4,6 +4,7 @@ import com.example.softwaredesigntechniques.domain.category.Category;
 import com.example.softwaredesigntechniques.domain.event.Event;
 import com.example.softwaredesigntechniques.domain.location.Location;
 import com.example.softwaredesigntechniques.domain.image.Image;
+import com.example.softwaredesigntechniques.domain.user.User;
 import com.example.softwaredesigntechniques.dto.event.EventDto;
 import com.example.softwaredesigntechniques.dto.event.EventRequest;
 import com.example.softwaredesigntechniques.endpoint.event.EventEndpoint;
@@ -12,10 +13,13 @@ import com.example.softwaredesigntechniques.mapper.event.EventMapper;
 import com.example.softwaredesigntechniques.service.event.EventService;
 import com.example.softwaredesigntechniques.service.location.LocationService;
 import com.example.softwaredesigntechniques.service.image.ImageService;
+import com.example.softwaredesigntechniques.service.user.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +38,7 @@ public class DefaultEventEndpoint implements EventEndpoint {
     private final EventMapper eventMapper;
     private final LocationService locationService;
     private final ImageService imageService;
+    private final UserService userService;
 
     @Override
     @Transactional(readOnly = true)
@@ -44,7 +49,7 @@ public class DefaultEventEndpoint implements EventEndpoint {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventDto> getAll() throws NotFoundException {
+    public List<EventDto> getAll() {
         log.info("Getting all events from database");
         List<Event> events = eventService.findAll();
         log.info("Found {} raw events from database", events.size());
@@ -151,6 +156,19 @@ public class DefaultEventEndpoint implements EventEndpoint {
         try {
             log.debug("Creating event from request: {}", eventRequest);
             Event event = eventMapper.toEvent(eventRequest);
+            event.setCreatedAt(LocalDateTime.now());
+            
+            // Get current user from security context
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                String username = authentication.getName();
+                User currentUser = userService.findByUsername(username)
+                    .orElseThrow(() -> new NotFoundException("Current user not found"));
+                event.setCreatedBy(currentUser);
+                log.debug("Set event creator to user: {}", username);
+            } else {
+                log.warn("No authenticated user found when creating event");
+            }
             
             // Ensure categories are set properly
             if (eventRequest.getCategories() == null || eventRequest.getCategories().isEmpty()) {
@@ -180,39 +198,20 @@ public class DefaultEventEndpoint implements EventEndpoint {
                 throw new IllegalArgumentException("Either locationId or locationRequest must be provided");
             }
             
-            // Set image if provided
+            // Handle image if provided
             if (eventRequest.getImageId() != null) {
-                log.info("Event request includes image ID: {}", eventRequest.getImageId());
-                try {
-                    Image image = imageService.get(eventRequest.getImageId());
-                    log.info("Found image with ID {}: {}", image.getId(), image.getFileName());
-                    if (image != null) {
-                        event.setImage(image);
-                        log.info("Set image with ID: {} on event", image.getId());
-                    } else {
-                        log.warn("Image with ID {} not found, continuing without image", eventRequest.getImageId());
-                    }
-                } catch (Exception e) {
-                    log.error("Error fetching image with ID {}: {}", eventRequest.getImageId(), e.getMessage(), e);
-                    log.warn("Continuing without image due to error");
-                }
-            } else {
-                log.info("No image ID provided in event request");
+                Image image = imageService.get(eventRequest.getImageId());
+                event.setImage(image);
+                log.debug("Set event image to: {}", image.getFileName());
             }
             
-            // Validate event times but allow invalid ones (with warning)
-            if (event.getStartTime() != null && event.getEndTime() != null) {
-                if (event.getStartTime().isAfter(event.getEndTime())) {
-                    log.warn("Event has invalid dates: start time {} is after end time {}", 
-                            event.getStartTime(), event.getEndTime());
-                }
-            }
-            
+            // Save the event
             event = eventService.saveOrUpdate(event);
-            log.info("Successfully created event with ID: {}", event.getId());
+            log.info("Event created successfully with ID: {}", event.getId());
+            
             return eventMapper.toDto(event);
         } catch (Exception e) {
-            log.error("Error adding event: {}", eventRequest, e);
+            log.error("Error creating event: {}", eventRequest, e);
             throw e;
         }
     }
@@ -222,7 +221,13 @@ public class DefaultEventEndpoint implements EventEndpoint {
     public EventDto update(Long id, EventRequest eventRequest) throws NotFoundException {
         Event existingEvent = eventService.get(id);
         Event updatedEvent = eventMapper.toEvent(eventRequest);
+        
+        // Preserve important fields from existing event
         updatedEvent.setId(existingEvent.getId());
+        updatedEvent.setCreatedAt(existingEvent.getCreatedAt());
+        updatedEvent.setCreatedBy(existingEvent.getCreatedBy());
+        updatedEvent.setDeletedAt(existingEvent.getDeletedAt());
+        updatedEvent.setDeletedBy(existingEvent.getDeletedBy());
         
         // Set location
         if (eventRequest.getLocationId() != null) {
@@ -244,26 +249,32 @@ public class DefaultEventEndpoint implements EventEndpoint {
             location = locationService.saveOrUpdate(location);
             updatedEvent.setLocation(location);
             log.info("Created new location {} for updated event", location.getId());
+        } else {
+            // Keep existing location if none provided
+            updatedEvent.setLocation(existingEvent.getLocation());
         }
         
-        // Set image if provided
+        // Set image if provided, otherwise keep existing
         if (eventRequest.getImageId() != null) {
             log.info("Event request includes image ID: {}", eventRequest.getImageId());
             try {
                 Image image = imageService.get(eventRequest.getImageId());
                 log.info("Found image with ID {}: {}", image.getId(), image.getFileName());
-                if (image != null) {
-                    updatedEvent.setImage(image);
-                    log.info("Set image with ID: {} on event", image.getId());
-                } else {
-                    log.warn("Image with ID {} not found, continuing without image", eventRequest.getImageId());
-                }
+                updatedEvent.setImage(image);
+                log.info("Set image with ID: {} on event", image.getId());
             } catch (Exception e) {
                 log.error("Error fetching image with ID {}: {}", eventRequest.getImageId(), e.getMessage(), e);
-                log.warn("Continuing without image due to error");
+                // Keep existing image on error
+                updatedEvent.setImage(existingEvent.getImage());
             }
         } else {
-            log.info("No image ID provided in event request");
+            // Keep existing image if none provided
+            updatedEvent.setImage(existingEvent.getImage());
+        }
+        
+        // Keep existing categories if none provided
+        if (eventRequest.getCategories() == null || eventRequest.getCategories().isEmpty()) {
+            updatedEvent.setCategories(existingEvent.getCategories());
         }
         
         // Check for date issues but allow them (just log a warning)
@@ -282,6 +293,17 @@ public class DefaultEventEndpoint implements EventEndpoint {
     @Transactional
     public void delete(Long id) throws NotFoundException {
         Event event = eventService.get(id);
-        eventService.delete(event);
+        event.setDeletedAt(LocalDateTime.now());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            User currentUser = userService.findByUsername(username)
+                    .orElseThrow(() -> new NotFoundException("Current user not found"));
+            event.setDeletedBy(currentUser);
+            log.debug("Set event creator to user: {}", username);
+        } else {
+            log.warn("No authenticated user found when creating event");
+        }
+        eventService.saveOrUpdate(event);
     }
 } 

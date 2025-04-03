@@ -14,6 +14,9 @@ import com.example.softwaredesigntechniques.service.user.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class DefaultRegistrationEndpoint implements RegistrationEndpoint {
 
     private final RegistrationService registrationService;
@@ -118,7 +122,17 @@ public class DefaultRegistrationEndpoint implements RegistrationEndpoint {
         // Set event
         Event event = eventService.get(registrationRequest.getEventId());
         registration.setEvent(event);
-        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            User currentUser = userService.findByUsername(username)
+                    .orElseThrow(() -> new NotFoundException("Current user not found"));
+            registration.setCreatedBy(currentUser);
+            registration.setCreatedAt(LocalDateTime.now());
+            log.debug("Set event creator to user: {}", username);
+        } else {
+            log.warn("No authenticated user found when creating event");
+        }
         registration = registrationService.saveOrUpdate(registration);
         return registrationMapper.toDto(registration);
     }

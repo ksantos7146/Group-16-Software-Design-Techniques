@@ -2,6 +2,7 @@ package com.example.softwaredesigntechniques.domain.image;
 
 import com.example.softwaredesigntechniques.domain.common.RemovalEntity;
 import com.example.softwaredesigntechniques.domain.event.Event;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +30,7 @@ public class Image extends RemovalEntity {
     @Column(name = "uploaded_at")
     private LocalDateTime uploadedAt;
 
+    @JsonBackReference
     @OneToOne(mappedBy = "image")
     private Event event;
 } 

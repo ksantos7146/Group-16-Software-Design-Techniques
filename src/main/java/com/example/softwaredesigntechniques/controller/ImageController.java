@@ -85,8 +85,20 @@ public class ImageController {
                 image.setUploadedAt(LocalDateTime.now());
                 
                 log.info("Creating Image entity with filename: {}", uniqueFileName);
+                log.info("Image data length before save: {}", imageData.length());
+                
+                // Verify the image data is valid base64
+                try {
+                    Base64.getDecoder().decode(imageData);
+                    log.info("Image data is valid base64");
+                } catch (IllegalArgumentException e) {
+                    log.error("Invalid base64 data: {}", e.getMessage());
+                    return ResponseEntity.badRequest().body(Map.of("error", "Invalid base64 data"));
+                }
+                
                 Image savedImage = imageService.saveOrUpdate(image);
                 log.info("Image entity saved with ID: {}", savedImage.getId());
+                log.info("Image data length after save: {}", savedImage.getImageData() != null ? savedImage.getImageData().length() : 0);
                 
                 // Return the image ID in a response
                 Map<String, Object> response = new HashMap<>();
@@ -121,8 +133,11 @@ public class ImageController {
                 return ResponseEntity.notFound().build();
             }
             
+            log.info("Image data length before decode: {}", image.getImageData().length());
+            
             // Decode the Base64 string to byte array
             byte[] imageData = Base64.getDecoder().decode(image.getImageData());
+            log.info("Decoded image data length: {} bytes", imageData.length);
             
             // Determine content type
             String contentType = image.getContentType();
@@ -179,6 +194,15 @@ public class ImageController {
                     imageInfo.put("hasImageData", image.getImageData() != null && !image.getImageData().isEmpty());
                     if (image.getImageData() != null) {
                         imageInfo.put("imageDataLength", image.getImageData().length());
+                        // Try to decode the base64 data to verify it's valid
+                        try {
+                            byte[] decodedData = Base64.getDecoder().decode(image.getImageData());
+                            imageInfo.put("decodedDataLength", decodedData.length);
+                            imageInfo.put("isValidBase64", true);
+                        } catch (IllegalArgumentException e) {
+                            imageInfo.put("isValidBase64", false);
+                            imageInfo.put("base64Error", e.getMessage());
+                        }
                     }
                     
                     // Check if the image has associated event
@@ -273,6 +297,18 @@ public class ImageController {
                             eventInfo.put("fileName", image.getFileName());
                             eventInfo.put("contentType", image.getContentType());
                             eventInfo.put("hasImageData", image.getImageData() != null && !image.getImageData().isEmpty());
+                            if (image.getImageData() != null) {
+                                eventInfo.put("imageDataLength", image.getImageData().length());
+                                // Try to decode the base64 data to verify it's valid
+                                try {
+                                    byte[] decodedData = Base64.getDecoder().decode(image.getImageData());
+                                    eventInfo.put("decodedDataLength", decodedData.length);
+                                    eventInfo.put("isValidBase64", true);
+                                } catch (IllegalArgumentException e) {
+                                    eventInfo.put("isValidBase64", false);
+                                    eventInfo.put("base64Error", e.getMessage());
+                                }
+                            }
                         } catch (Exception e) {
                             eventInfo.put("imageError", e.getMessage());
                             eventInfo.put("imageFound", false);
@@ -314,6 +350,15 @@ public class ImageController {
                 result.put("hasImageData", image.getImageData() != null && !image.getImageData().isEmpty());
                 if (image.getImageData() != null) {
                     result.put("imageDataLength", image.getImageData().length());
+                    // Try to decode the base64 data to verify it's valid
+                    try {
+                        byte[] decodedData = Base64.getDecoder().decode(image.getImageData());
+                        result.put("decodedDataLength", decodedData.length);
+                        result.put("isValidBase64", true);
+                    } catch (IllegalArgumentException e) {
+                        result.put("isValidBase64", false);
+                        result.put("base64Error", e.getMessage());
+                    }
                 }
                 result.put("uploadedAt", image.getUploadedAt());
                 

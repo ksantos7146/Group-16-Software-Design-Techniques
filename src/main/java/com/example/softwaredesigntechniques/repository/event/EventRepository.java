@@ -11,13 +11,14 @@ import java.util.Set;
 
 @Repository
 public interface EventRepository extends BaseRepository<Event> {
-    List<Event> findByTitle(String title);
-    List<Event> findByTitleContainingIgnoreCase(String title);
-    List<Event> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
-    List<Event> findByEndTimeBetween(LocalDateTime start, LocalDateTime end);
-    List<Event> findByCapacityGreaterThan(Integer capacity);
-    List<Event> findByCategoriesContaining(Category category);
-    List<Event> findByCategoriesIn(Set<Category> categories);
-    List<Event> findByLocationId(Long locationId);
-    List<Event> findByImageId(Long imageId);
+    List<Event> findByTitleAndDeletedByIsNull(String title);
+    List<Event> findByTitleContainingIgnoreCaseAndDeletedByIsNull(String title);
+    List<Event> findByStartTimeBetweenAndDeletedByIsNull(LocalDateTime start, LocalDateTime end);
+    List<Event> findByEndTimeBetweenAndDeletedByIsNull(LocalDateTime start, LocalDateTime end);
+    List<Event> findByCapacityGreaterThanAndDeletedByIsNull(Integer capacity);
+    List<Event> findByCategoriesContainingAndDeletedByIsNull(Category category);
+    List<Event> findByCategoriesInAndDeletedByIsNull(Set<Category> categories);
+    List<Event> findByLocationIdAndDeletedByIsNull(Long locationId);
+    List<Event> findByImageIdAndDeletedByIsNull(Long imageId);
+    List<Event> findByDeletedByIsNull();
 } 

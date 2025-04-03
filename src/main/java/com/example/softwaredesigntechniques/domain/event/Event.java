@@ -5,6 +5,8 @@ import com.example.softwaredesigntechniques.domain.common.RemovalEntity;
 import com.example.softwaredesigntechniques.domain.image.Image;
 import com.example.softwaredesigntechniques.domain.location.Location;
 import com.example.softwaredesigntechniques.domain.registration.Registration;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +29,7 @@ public class Event extends RemovalEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
@@ -41,6 +44,7 @@ public class Event extends RemovalEntity {
 
     private Integer capacity;
 
+    @JsonManagedReference
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
